@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>YIMBY</title>
+    <link rel='stylesheet' href='style.css'>
+  <head>
+  <body>
+    <header>
+      <div class='align-left'>embrace the metropolis</div>
+      <div class='align-center'>YIMBY PARTY</div>
+      <div class='align-right'>legalize housing</div>
+    </header>
+    <h1>yes in my back yard</h1>
+    <p>
+      only a few parts of san francisco have dense housing.
+    </p>
+    <p>
+      a lot of our beautiful city is covered in parking lots and offices.
+      a surprising amount of land is
+      <a href='//priceonomics.com/why-does-san-francisco-have-so-many-golf-courses/'>
+      taken up by golf courses</a>.
+      there's lots of underused space and single family houses.
+    </p>
+    <h2>housing density</h2>
+    <p>
+      <strong>data:</strong>
+      <a href='//data.sfgov.org/Housing-and-Buildings/Land-Use/us3s-fp9q'>data.sfgov.org</a>
+    </p>
+    <p>
+      the map below has one circle for every housing lot in sf.
+      area is proportional to the number of units.
+      single unit lots are orange, multitenant lots are teal. empty space means no housing.
+    </p>
+    <p>
+      <div id='map'><strong>loading...</strong></div>
+    </p>
+    <p>
+      pinch to zoom, drag to move the map, hold shift to rotate
+    </p>
+    <p>
+      want lower rents, a more welcoming city, and more blue on the map?
+      <strong><a href='//sfyimby.org'>join sf yimby.</a></strong>
+    </p>
+    <p>
+      made with <a href='//uber.github.io/deck.gl'>deck.gl</a> and <a href='//data.sfgov.org/'>sf open data</a>.
+      <a href='//github.com/dcposch/yimby'>code available on github</a>.
+    </p>
+    <script src='build/bundle.js'></script>
+  </body>
+</html>
