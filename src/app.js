@@ -3,18 +3,33 @@ import 'babel-polyfill'
 import React, {Component} from 'react'
 import {render} from 'react-dom'
 import DeckGL from 'deck.gl/react'
-import {ScatterplotLayer, ScreenDoorLayer} from 'deck.gl'
+import {ScatterplotLayer, ChoroplethLayer, ScreenDoorLayer} from 'deck.gl'
 import MapGL from 'react-map-gl'
 import config from './config'
 
-class Root extends Component {
-  constructor () {
+var LAND_USE_COLORS = {
+  MIXRES: [31, 120, 180, 255],
+  RESIDENT: [166, 206, 227, 255],
+  PDR: [251, 154, 153, 255], // production, distribution, repair
+  CIE: [251, 154, 153, 255], // industrial
+  MIXED: [178, 223, 138, 255], // mixed, nonresidential
+  MIPS: [178, 223, 138, 255], // office space
+  MED: [178, 223, 138, 255], // medical
+  VISITOR: [178, 223, 138, 255], // hotels
+  'RETAIL/ENT': [51, 160, 44, 255],
+  VACANT: [227, 26, 28, 255],
+  'MISSING DATA': [253, 191, 111, 255],
+  'OpenSpace': [0, 0, 0, 0]
+}
+
+class Map extends Component {
+  constructor (props) {
     super()
+    this.props = props
     this.state = {
       hover: -1,
       select: -1,
       data: null,
-      type: 'scatter',
       viewport: {
         latitude: 37.78,
         longitude: -122.44,
@@ -28,8 +43,8 @@ class Root extends Component {
   }
 
   render () {
-    const {viewport, width, height, data, type, hover} = this.state
-    console.log('Rendering ' + JSON.stringify({hover}))
+    const {viewport, width, height, data, hover} = this.state
+    const {type} = this.props
 
     const layers = []
     if (data !== null) {
@@ -39,7 +54,16 @@ class Root extends Component {
           data,
           opacity: 1,
           getRadius: (row, i) => Math.sqrt(row.units / 100) + (i === hover ? 1 : 0),
-          getColor: (row) => row.units > 1 ? [0, 255, 255, 128] : [255, 128, 0, 255]
+          getColor: (row) => row.units > 1 ? [0, 240, 240, 180] : [255, 128, 0, 255]
+        })
+      } else if (type === 'choropleth') {
+        layer = new ChoroplethLayer({
+          data,
+          opacity: 1,
+          getColor: f => {
+            var props = f.properties
+            return LAND_USE_COLORS[props.landuse]
+          }
         })
       } else {
         layer = new ScreenDoorLayer({
@@ -81,12 +105,20 @@ class Root extends Component {
   }
 }
 
-const root = render(<Root />, document.querySelector('#map'))
+const mapDensity = render(<Map type='scatter' />, document.querySelector('#map-density'))
+const mapLots = render(<Map type='choropleth' />, document.querySelector('#map-lots'))
 
-const xhr = new window.XMLHttpRequest()
-xhr.onload = function () {
-  root.setState({data: xhr.response})
+fetch('build/lots.json', function (data) {
+  mapDensity.setState({data})
+  fetch('build/lot-geojson.json', function (data) {
+    mapLots.setState({data})
+  })
+})
+
+function fetch (url, cb) {
+  const xhr = new window.XMLHttpRequest()
+  xhr.onload = () => cb(xhr.response)
+  xhr.responseType = 'json'
+  xhr.open('GET', url)
+  xhr.send()
 }
-xhr.responseType = 'json'
-xhr.open('GET', 'build/lots.json')
-xhr.send()
