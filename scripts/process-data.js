@@ -52,7 +52,7 @@ function computeLotGeo (input) {
     })
   return {
     type: 'FeatureCollection',
-    features: lotGeoFeatures.slice(0, 10000)
+    features: lotGeoFeatures.slice(0, 50000)
   }
 }
 

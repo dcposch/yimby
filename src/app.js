@@ -53,8 +53,8 @@ class Map extends Component {
         layer = new ScatterplotLayer({
           data,
           opacity: 1,
-          getRadius: (row, i) => Math.sqrt(row.units / 100) + (i === hover ? 1 : 0),
-          getColor: (row) => row.units > 1 ? [0, 240, 240, 180] : [255, 128, 0, 255]
+          getRadius: (row, i) => Math.max(Math.sqrt(row.units / 100), 0.2) + (i === hover ? 1 : 0),
+          getColor: (row) => row.units > 1 ? [0, 220, 220, 220] : [255, 128, 0, 255]
         })
       } else if (type === 'choropleth') {
         layer = new ChoroplethLayer({
