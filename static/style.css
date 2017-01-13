@@ -9,8 +9,18 @@ h1 {
   font-size: 45px;
 }
 
-h1, h2, strong {
+h2 {
+  font-size: 24px;
+  margin-top: 1.5em;
+}
+
+h1, h2, strong, a {
   color: #222;
+}
+
+h1 > a, h2 > a {
+  text-decoration: none;
+  color: #888;
 }
 
 header {

@@ -59,10 +59,11 @@ class Root extends Component {
     // - Light: mapbox://styles/mapbox/light-v9
     // - Dark: mapbox://styles/mapbox/dark-v9
     // - Dark without labels: mapbox://styles/dcposch/cixuozuq600312roeoc5r4ptq
+    // - LightMono: mapbox://styles/dcposch/cixvuegri000j2srje8xbxu0v
     return (
       <MapGL
         {...viewport}
-        mapStyle='mapbox://styles/mapbox/light-v9'
+        mapStyle='mapbox://styles/dcposch/cixvuegri000j2srje8xbxu0v'
         onChangeViewport={v => this.setState({viewport: v})}
         preventStyleDiffing={false}
         mapboxApiAccessToken={config.MAPBOX_TOKEN}
