@@ -29,7 +29,7 @@
     "start": "npm run test && npm run watch & http-server static/",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
     "watch": "watchify -t babelify src/app.js -o static/build/bundle.js",
-    "browserify": "browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
+    "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
     "test": "standard"
   },
   "babel": {

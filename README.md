@@ -5,10 +5,9 @@ legalize housing. https://dcpos.ch/yimby
 ## quick start
 
 ```
-./scripts/download.sh
-
-npm install
-npm start
+./scripts/download.sh  # downloads data from SF Open Data
+npm install            # processes the data, makes a much smaller json, runs browserify
+npm start              # runs a development server and watchify
 ```
 
 ## data
