@@ -19,14 +19,14 @@
     "babel-preset-react": "^6.16.0",
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
-    "http-server": "^0.9.0",
+    "node-static": "^0.7.9",
     "standard": "^8.6.0",
     "uglify-js": "^2.7.5",
     "watchify": "^3.8.0"
   },
   "scripts": {
     "postinstall": "npm run build",
-    "start": "npm run test && npm run watch & http-server static/",
+    "start": "npm run test && npm run watch & (cd static && static -z .)",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
     "watch": "watchify -t babelify src/app.js -o static/build/bundle.js",
     "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
