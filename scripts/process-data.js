@@ -75,16 +75,16 @@ function computeLotGeo (input) {
 // Always chooses point 0, then greedily picks the point furthest from all
 // already-chosen points until we have maxVerts points
 function simplifyPoly (poly, maxVerts) {
-  if (poly.length < maxVerts) return poly
-  var simplifiedPoly = [poly[0]]
+  if (poly.length <= maxVerts) return poly
+  var indices = [0]
   for (var i = 1; i < maxVerts; i++) {
     var maxMinDist = 0
     var maxIndex = 0
     for (var j = 0; j < poly.length; j++) {
       var minDist = Infinity
-      for (var k = 0; k < simplifiedPoly.length; k++) {
+      for (var k = 0; k < indices.length; k++) {
         var pj = poly[j]
-        var pk = simplifiedPoly[k]
+        var pk = poly[indices[k]]
         var dist2 = (pj[0] - pk[0]) * (pj[0] - pk[0]) + (pj[1] - pk[1]) * (pj[1] - pk[1])
         if (dist2 < minDist) minDist = dist2
       }
@@ -93,9 +93,11 @@ function simplifyPoly (poly, maxVerts) {
         maxIndex = j
       }
     }
-    simplifiedPoly.push(poly[maxIndex])
+    indices.push(maxIndex)
   }
-  return simplifiedPoly
+  indices.sort()
+  if (Math.random() < 0.001) console.log(JSON.stringify(indices))
+  return indices.map((index) => poly[index])
 }
 
 // Computes the approximate centroid of a GeoJSON MultiPolygon

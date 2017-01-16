@@ -2,7 +2,8 @@ import 'babel-polyfill'
 
 import React, {Component} from 'react'
 import {render} from 'react-dom'
-import DeckGL from 'deck.gl/react'
+import DeckGL from 'deck.gl/src/react/deckgl'
+// import DeckGL from 'deck.gl/react'
 import {ScatterplotLayer, ChoroplethLayer, ScreenDoorLayer} from 'deck.gl'
 import MapGL from 'react-map-gl'
 import config from './config'
@@ -43,7 +44,7 @@ class Map extends Component {
   }
 
   render () {
-    const {viewport, width, height, data, hover} = this.state
+    const {viewport, width, height, data, hover, select} = this.state
     const {type} = this.props
 
     const layers = []
@@ -53,8 +54,12 @@ class Map extends Component {
         layer = new ScatterplotLayer({
           data,
           opacity: 1,
-          getRadius: (row, i) => Math.max(Math.sqrt(row.units / 100), 0.2) + (i === hover ? 1 : 0),
-          getColor: (row) => row.units > 1 ? [0, 220, 220, 220] : [255, 128, 0, 255]
+          getRadius: (row, i) => Math.max(Math.sqrt(row.units / 100), 0.2) + (i === hover ? 0.2 : 0),
+          getColor: (row, i) => i === select ? [255, 255, 255, 255]
+            : (row.units > 1 ? [0, 220, 220, 220] : [255, 128, 0, 255]),
+          pickable: true,
+          onHover: (info) => { if (info.index !== select) this.setState({hover: info.index}) || console.log('DBG h ' + info.index) },
+          onClick: (info) => this.setState({select: info.index, hover: -1})
         })
       } else if (type === 'choropleth') {
         layer = new ChoroplethLayer({
@@ -63,6 +68,13 @@ class Map extends Component {
           getColor: f => {
             var props = f.properties
             return LAND_USE_COLORS[props.landuse]
+          },
+          pickable: true,
+          onHover: function (info) {
+            console.log('DBG hover', info)
+          },
+          onClick: function (info) {
+            console.log('DBG click', info)
           }
         })
       } else {

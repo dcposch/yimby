@@ -5,6 +5,7 @@
   "main": "index.js",
   "author": "DC Posch",
   "license": "ISC",
+  "repository": "https://github.com/dcposch/yimby",
   "dependencies": {
     "babel-polyfill": "^6.20.0",
     "deck.gl": "^3.1.1",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-2": "^6.18.0",
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
     "node-static": "^0.7.9",
@@ -26,7 +28,7 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "start": "npm run test && npm run watch & (cd static && static -z .)",
+    "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
     "watch": "watchify -t babelify src/app.js -o static/build/bundle.js",
     "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
