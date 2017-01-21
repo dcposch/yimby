@@ -2,19 +2,25 @@
 var fs = require('fs')
 var zlib = require('zlib')
 
-var inputFile = 'data/land-use.json'
+var inputFileUse = 'data/land-use.json'
+var inputFileZoning = 'data/zoning.json'
 var outputFileLots = 'static/build/lots.json'
 var outputFileLotGeo = 'static/build/lot-geojson.json'
+var outputFileZoningGeo = 'static/build/zoning-geojson.json'
 
-console.log('reading %s...', inputFile)
-var input = JSON.parse(fs.readFileSync(inputFile, 'utf8'))
+console.log('reading input...', inputFileUse)
+var inputUse = JSON.parse(fs.readFileSync(inputFileUse, 'utf8'))
+console.log('reading input...', inputFileZoning)
+var inputZoning = JSON.parse(fs.readFileSync(inputFileZoning, 'utf8'))
 
 console.log('transforming...')
-var residentialLots = computeResLots(input)
-var lotGeo = computeLotGeo(input)
+var residentialLots = computeResLots(inputUse)
+var lotGeo = computeLotGeo(inputUse)
+var zoningGeo = computeZoningGeo(inputZoning)
 
 write(outputFileLots, residentialLots)
 write(outputFileLotGeo, lotGeo)
+write(outputFileZoningGeo, zoningGeo)
 
 console.log('done')
 
@@ -68,6 +74,36 @@ function computeLotGeo (input) {
   return {
     type: 'FeatureCollection',
     features: lotGeoFeatures.slice(0, 10000)
+  }
+}
+
+function computeZoningGeo (input) {
+  var zones = {}
+  var features = input.map(function (row) {
+    var zone = zones[row.zoning]
+    var zoneInfo = {
+      id: row.zoning,
+      idSimple: row.zoning_sim,
+      name: row.districtna
+    }
+    if (!zone) {
+      zones[row.zoning] = zoneInfo
+    } else if (JSON.stringify(zone) !== JSON.stringify(zoneInfo)) {
+      console.log('inconsistent info for the same zone ID', zone, zoneInfo)
+    }
+
+    return {
+      type: 'Feature',
+      geometry: row.geometry,
+      properties: zoneInfo
+    }
+  })
+  return {
+    type: 'FeatureCollection',
+    features: features,
+    properties: {
+      zones: zones
+    }
   }
 }
 
