@@ -147,8 +147,13 @@ var LAND_USE_COLORS = {
 main()
 
 function main () {
-  console.log('Loading ' + document.location.pathname)
-  switch (document.location.pathname) {
+  let path = document.location.pathname
+  // Hack to make these pages work when served from dcpos.ch/yimby/
+  if (path.startsWith('/yimby')) {
+    path = path.substring('/yimby'.length)
+  }
+  console.log('Loading ' + path)
+  switch (path) {
     case '/':
       return loadIndex()
     case '/zoning/':
