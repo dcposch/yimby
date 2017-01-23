@@ -9,7 +9,7 @@ section {
   position: absolute;
   top: 20px;
   left: 20px;
-  width: 500px;
+  width: 520px;
   height: calc(100% - 40px);
   overflow: scroll;
   padding: 0 28px;

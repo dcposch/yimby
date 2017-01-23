@@ -6,8 +6,6 @@ import Map from './map'
 
 const SCALES = {
   GREEN: [
-    [247, 252, 245],
-    [229, 245, 224],
     [199, 233, 192],
     [161, 217, 155],
     [116, 196, 118],
@@ -17,8 +15,6 @@ const SCALES = {
     [0, 68, 27]
   ],
   RED: [
-    [255, 245, 240],
-    [254, 224, 210],
     [252, 187, 161],
     [252, 146, 114],
     [251, 106, 74],
@@ -28,8 +24,6 @@ const SCALES = {
     [103, 0, 13]
   ],
   ORANGE: [
-    [255, 245, 235],
-    [254, 230, 206],
     [253, 208, 162],
     [253, 174, 107],
     [253, 141, 60],
@@ -39,8 +33,6 @@ const SCALES = {
     [127, 39, 4]
   ],
   BLUE: [
-    [247, 251, 255],
-    [222, 235, 247],
     [198, 219, 239],
     [158, 202, 225],
     [107, 174, 214],
@@ -50,8 +42,6 @@ const SCALES = {
     [8, 48, 107]
   ],
   PURPLE: [
-    [252, 251, 253],
-    [239, 237, 245],
     [218, 218, 235],
     [188, 189, 220],
     [158, 154, 200],
@@ -63,24 +53,28 @@ const SCALES = {
 }
 
 var ZONE_COLORS = {
-  'C-2': SCALES.BLUE[4],
-  'C-3-G': SCALES.BLUE[5],
-  'C-3-O': SCALES.BLUE[5],
-  'C-3-O(SD)': SCALES.BLUE[6],
-  'C-3-R': SCALES.BLUE[5],
-  'C-3-S': SCALES.BLUE[5],
-  'CCB': SCALES.BLUE[3],
-  'CRNC': SCALES.BLUE[3],
-  'CVR': SCALES.BLUE[3],
-  'HP-RA': SCALES.BLUE[3],
-  'M-1': SCALES.ORANGE[4],
-  'M-2': SCALES.ORANGE[5],
-  'MB-O': SCALES.PURPLE[4],
-  'MB-OS': SCALES.BLUE[3],
-  'MB-RA': SCALES.BLUE[3],
-  'MUG': SCALES.GREEN[3],
-  'MUO': SCALES.BLUE[3],
-  'MUR': SCALES.GREEN[3],
+  // Residential
+  'RH-1(D)': SCALES.RED[6],
+  'RH-1': SCALES.RED[5],
+  'RH-1(S)': SCALES.RED[4],
+  'RH-2': SCALES.RED[4],
+  'RH-3': SCALES.RED[4],
+
+  // ...Residential mixed
+  'RM-1': SCALES.GREEN[2],
+  'RM-2': SCALES.GREEN[3],
+  'RM-3': SCALES.GREEN[4],
+  'RM-4': SCALES.GREEN[5],
+
+  // ...Residential commercial combined
+  'RC-3': SCALES.GREEN[4],
+  'RC-4': SCALES.GREEN[5],
+
+  // ...Residential transit oriented
+  'RTO': SCALES.GREEN[5],
+  'RTO-M': SCALES.GREEN[5],
+
+  // Neighborhood Commercial
   'NC-1': SCALES.GREEN[3],
   'NC-2': SCALES.GREEN[4],
   'NC-3': SCALES.GREEN[5],
@@ -90,43 +84,68 @@ var ZONE_COLORS = {
   'NCT-1': SCALES.GREEN[5],
   'NCT-2': SCALES.GREEN[4],
   'NCT-3': SCALES.GREEN[3],
-  'P': SCALES.PURPLE[4],
+
+  // Commercial
+  'C-2': SCALES.BLUE[4],
+  'C-3-G': SCALES.BLUE[5],
+  'C-3-O': SCALES.BLUE[5],
+  'C-3-O(SD)': SCALES.BLUE[6],
+  'C-3-R': SCALES.BLUE[5],
+  'C-3-S': SCALES.BLUE[5],
+
+  // Industrial
+  'M-1': SCALES.ORANGE[5],
+  'M-2': SCALES.ORANGE[6],
+
   'PDR-1-B': SCALES.ORANGE[3],
   'PDR-1-D': SCALES.ORANGE[3],
   'PDR-1-G': SCALES.ORANGE[3],
   'PDR-2': SCALES.ORANGE[4],
+
+  // Special
+  // ... Chinatown
+  'CCB': SCALES.BLUE[3],
+  'CRNC': SCALES.BLUE[3],
+  'CVR': SCALES.BLUE[3],
+
+  // ... Hunter's Point
+  'HP-RA': SCALES.BLUE[3],
+
+  // ... Mission Bay
+  'MB-O': SCALES.PURPLE[4],
+  'MB-OS': SCALES.BLUE[3],
+  'MB-RA': SCALES.BLUE[3],
+  'MUG': SCALES.GREEN[3],
+  'MUO': SCALES.BLUE[3],
+  'MUR': SCALES.GREEN[3],
+
+  // ... Park Merced
   'PM-CF': SCALES.GREEN[3],
   'PM-MU1': SCALES.GREEN[3],
   'PM-MU2': SCALES.GREEN[3],
   'PM-OS': SCALES.GREEN[3],
   'PM-R': SCALES.GREEN[3],
   'PM-S': SCALES.GREEN[3],
-  'RC-3': SCALES.GREEN[4],
-  'RC-4': SCALES.GREEN[5],
+
+  // ... ???
   'RCD': SCALES.PURPLE[2],
   'RED': SCALES.PURPLE[2],
   'RED-MX': SCALES.PURPLE[2],
-  'RH DTR': SCALES.PURPLE[2],
-  'RH-1': SCALES.RED[6],
-  'RH-1(D)': SCALES.RED[7],
-  'RH-1(S)': SCALES.RED[5],
-  'RH-2': SCALES.RED[4],
-  'RH-3': SCALES.RED[3],
-  'RM-1': SCALES.GREEN[2],
-  'RM-2': SCALES.GREEN[3],
-  'RM-3': SCALES.GREEN[4],
-  'RM-4': SCALES.GREEN[5],
-  'RTO': SCALES.GREEN[5],
-  'RTO-M': SCALES.GREEN[5],
   'SALI': SCALES.PURPLE[2],
-  'SB-DTR': SCALES.GREEN[6],
   'SLI': SCALES.PURPLE[2],
   'SPD': SCALES.PURPLE[2],
   'SSO': SCALES.PURPLE[2],
-  'TB DTR': SCALES.GREEN[6],
   'UMU': SCALES.PURPLE[2],
   'WMUG': SCALES.PURPLE[2],
-  'WMUO': SCALES.PURPLE[2]
+  'WMUO': SCALES.PURPLE[2],
+
+  // ... Rincon Hill and Transbay
+  'RH DTR': SCALES.GREEN[6],
+  'TB DTR': SCALES.GREEN[6],
+  'SB-DTR': SCALES.GREEN[6],
+
+  // Public (not shown)
+  'P': SCALES.PURPLE[4]
 }
 
 var LAND_USE_COLORS = {
@@ -164,16 +183,17 @@ function main () {
 }
 
 function loadIndex () {
+  const mapStyle = 'mapbox://styles/dcposch/cixvuegri000j2srje8xbxu0v'
   const mapDensity = render(
-    <Map type='scatter' getColor={getLotDensityColor} />,
+    <Map type='scatter' getColor={getLotDensityColor} mapStyle={mapStyle} />,
     document.querySelector('#map-density')
   )
   const mapLots = render(
-    <Map type='choropleth' getColor={getLotUseColor} />,
+    <Map type='choropleth' getColor={getLotUseColor} mapStyle={mapStyle} />,
     document.querySelector('#map-lots')
   )
   const mapZoning = render(
-    <Map type='choropleth' getColor={getZoneColor} />,
+    <Map type='choropleth' getColor={getZoneColor} mapStyle={mapStyle} />,
     document.querySelector('#map-zoning')
   )
 
@@ -193,13 +213,31 @@ function loadZoning () {
     <Map type='choropleth' getColor={getZoneColor} />,
     document.querySelector('#map-zoning')
   )
+
   fetch('../build/zoning-geojson.json', function (data) {
+    // Don't show public land like parks and highways.
+    // Filter it out here, not during data preprocessing, so that we can
+    // simplify / re-use / browser-cache the data sets we're loading.
+    // I might want to show public lots in a different visualization.
+    data.features = data.features.filter(function (feature) {
+      return feature.properties.idSimple !== 'P'
+    })
     mapZoning.setState({data})
   })
+
+  handleZoningEvents(mapZoning)
+}
+
+// Update the detail panes via direct DOM manipulation.
+// Conscious choice not to use React here, since I might remove React and deck.gl entirely
+// and just use Mapbox layers for the visualization.
+function handleZoningEvents (mapZoning) {
+  const section = document.querySelector('section')
+  section.addEventListener('mouseover', () => mapZoning.setState({hover: -1}))
 }
 
 function getLotDensityColor (row) {
-  return row.units > 1 ? [0, 220, 220, 220] : [255, 128, 0]
+  return row.units > 1 ? [0, 220, 220, 220] : [255, 128, 0, 220]
 }
 
 function getLotUseColor (props) {

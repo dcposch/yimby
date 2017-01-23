@@ -44,7 +44,7 @@ module.exports = class Map extends Component {
     return (
       <MapGL
         {...viewport}
-        mapStyle='mapbox://styles/dcposch/cixvuegri000j2srje8xbxu0v'
+        mapStyle={this.props.mapStyle || 'mapbox://styles/mapbox/light-v9'}
         onChangeViewport={v => this.setState({viewport: v})}
         preventStyleDiffing={false}
         mapboxApiAccessToken={config.MAPBOX_TOKEN}
@@ -76,13 +76,7 @@ module.exports = class Map extends Component {
           if (i === select) return [255, 255, 255, 255]
           return this.props.getColor(row)
         },
-        pickable: true,
-        onHover: (info) => {
-          if (info.index !== this.state.select) this.setState({hover: info.index})
-        },
-        onClick: (info) => {
-          this.setState({select: info.index, hover: -1})
-        }
+        pickable: false
       })
     } else if (type === 'choropleth') {
       if (data) data.features.forEach((x, i) => { x.properties.index = i })
@@ -96,12 +90,17 @@ module.exports = class Map extends Component {
           if (index === hover) alpha = 0.8
           else if (index === select) alpha = 1.0
           const color = this.props.getColor(props)
-          if (!color || color.length !== 3) throw new Error('Invalid color ' + color)
-          return [].concat(color, [alpha * 255])
+          if (!color || color.length !== 3) {
+            throw new Error('Invalid color ' + color)
+          }
+          const rgba = [].concat(color, [Math.round(alpha * 255)])
+          return rgba
         },
         pickable: true,
         onHover: (info) => {
-          if (info.index !== this.state.select) this.setState({hover: info.index})
+          if (info.index < 0 || info.index !== this.state.select) {
+            this.setState({hover: info.index})
+          }
         },
         onClick: (info) => {
           this.setState({select: info.index, hover: -1})
