@@ -30,6 +30,10 @@ body {
   width: 300px;
 }
 
+.legend {
+  margin-bottom: -15px;
+}
+
 .legend span {
   display: inline-block;
   cursor: pointer;

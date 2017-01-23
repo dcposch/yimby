@@ -99,14 +99,14 @@ module.exports = class Map extends Component {
           if (this.state.hover === info.index) return // already hovered
           this.setState({hover: info.index})
           if (this.props.onHover) {
-            this.props.onHover(info.index, this.state.data)
+            this.props.onHover.call(this, info.index, this.state.data)
           }
         },
         onClick: (info) => {
           if (this.state.select === info.index) return // already selected
           this.setState({select: info.index, hover: -1})
           if (this.props.onSelect) {
-            this.props.onSelect(info.index, this.state.data)
+            this.props.onSelect.call(this, info.index, this.state.data)
           }
         },
         updateTriggers: {

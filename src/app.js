@@ -167,7 +167,9 @@ var LAND_USE_COLORS = {
 }
 
 const state = {
-  filteredZoneID: null
+  filteredZoneSimpleID: null,
+  selectedZoneIndex: -1,
+  data: {}
 }
 
 main()
@@ -229,6 +231,7 @@ function loadZoning () {
     data.features = data.features.filter(function (feature) {
       return feature.properties.idSimple !== 'P'
     })
+    state.data.zoneGeo = data
     mapZoning.setState({data})
   })
 
@@ -251,7 +254,7 @@ function handleZoningEvents (mapZoning) {
     hasLegend[id] = true
     legendElem.style.borderTopColor = toHtmlColor(color)
     legendElem.title = id
-    legendElem.addEventListener('click', () => filterToZoneID(id, legendElem, mapZoning))
+    legendElem.addEventListener('click', () => filterToZone(id, legendElem, mapZoning))
   })
   const numZones = Object.keys(ZONE_COLORS).length
   const numZonesInLegend = Object.keys(hasLegend).length
@@ -260,19 +263,21 @@ function handleZoningEvents (mapZoning) {
   }
 }
 
-function filterToZoneID (id, legendElem, mapZoning) {
+function filterToZone (id, legendElem, mapZoning) {
   var selectedElem = document.querySelector('.legend span.selected')
   if (selectedElem) selectedElem.classList.remove('selected')
-  if (id === state.filteredZoneID) {
+  if (id === state.filteredZoneSimpleID) {
     legendElem.classList.remove('selected')
-    state.filteredZoneID = null
+    state.filteredZoneSimpleID = null
   } else {
     legendElem.classList.add('selected')
-    state.filteredZoneID = id
+    state.filteredZoneSimpleID = id
   }
 
-  const updateTriggers = {color: state.filteredZoneID}
-  mapZoning.setState({updateTriggers, hover: -1, select: -1})
+  const updateTriggers = {color: state.filteredZoneSimpleID}
+  mapZoning.setState({updateTriggers})
+
+  updateZoneDetails(mapZoning)
 }
 
 function toHtmlColor (color) {
@@ -280,7 +285,14 @@ function toHtmlColor (color) {
 }
 
 function onSelectZone (index, data) {
+  state.selectedZoneIndex = index
+  updateZoneDetails(this)
+}
+
+function updateZoneDetails (mapZoning) {
   const elem = document.querySelector('.zone-details')
+  const index = state.selectedZoneIndex
+  const data = state.data.zoneGeo
 
   if (index < 0) {
     elem.style.display = 'none'
@@ -289,8 +301,10 @@ function onSelectZone (index, data) {
 
   const feature = data.features[index]
   const {id, idSimple} = feature.properties
-  if (state.filteredZoneID && state.filteredZoneID !== idSimple) {
+  if (state.filteredZoneSimpleID && state.filteredZoneSimpleID !== idSimple) {
     elem.style.display = 'none'
+    state.selectedZoneIndex = -1
+    mapZoning.setState({select: -1})
     return
   }
 
@@ -323,7 +337,7 @@ function getZoneColor (props, isHover, isSelect) {
   let alpha = 0.6
   if (isHover) alpha = 0.7
   else if (isSelect) alpha = 1.0
-  if (state.filteredZoneID && state.filteredZoneID !== props.idSimple) alpha = 0
+  if (state.filteredZoneSimpleID && state.filteredZoneSimpleID !== props.idSimple) alpha = 0
 
   var color = ZONE_COLORS[props.idSimple]
   if (!color) throw new Error('Missing color for ' + props.idSimple)
