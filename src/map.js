@@ -98,12 +98,19 @@ module.exports = class Map extends Component {
         },
         pickable: true,
         onHover: (info) => {
-          if (info.index < 0 || info.index !== this.state.select) {
-            this.setState({hover: info.index})
+          if (info.index > 0 && info.index === this.state.select) return // already selected
+          if (this.state.hover === info.index) return // already hovered
+          this.setState({hover: info.index})
+          if (this.props.onHover) {
+            this.props.onHover(info.index, this.state.data)
           }
         },
         onClick: (info) => {
+          if (this.state.select === info.index) return // already selected
           this.setState({select: info.index, hover: -1})
+          if (this.props.onSelect) {
+            this.props.onSelect(info.index, this.state.data)
+          }
         },
         updateTriggers: {
           colors: {hover: this.state.hover, select: this.state.select}
@@ -121,4 +128,14 @@ module.exports = class Map extends Component {
       })
     }
   }
+}
+
+Map.propTypes = {
+  type: React.PropTypes.string.isRequired,
+  width: React.PropTypes.number,
+  height: React.PropTypes.number,
+  mapStyle: React.PropTypes.string,
+  getColor: React.PropTypes.func,
+  onHover: React.PropTypes.func,
+  onSelect: React.PropTypes.func
 }

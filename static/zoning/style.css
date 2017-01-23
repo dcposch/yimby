@@ -5,17 +5,29 @@ body {
   overflow: hidden;
 }
 
-section {
+.zones {
   position: absolute;
   top: 20px;
   left: 20px;
   width: 520px;
   height: calc(100% - 40px);
   overflow: scroll;
+}
+
+.zones,
+.zone-details {
   padding: 0 28px;
   background-color: #fff;
   color: #222;
   opacity: 0.85;
+}
+
+.zone-details {
+  display: none;
+  position: absolute;
+  top: 20px;
+  left: 616px;
+  width: 300px;
 }
 
 h1 {

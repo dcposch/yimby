@@ -84,7 +84,8 @@ function computeZoningGeo (input) {
     var zoneInfo = {
       id: row.zoning,
       idSimple: row.zoning_sim,
-      name: row.districtna
+      name: row.districtna,
+      legalURL: row.url
     }
     if (!zone) {
       zones[row.zoning] = zoneInfo

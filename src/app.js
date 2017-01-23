@@ -69,10 +69,11 @@ var ZONE_COLORS = {
   // ...Residential commercial combined
   'RC-3': SCALES.GREEN[4],
   'RC-4': SCALES.GREEN[5],
+  'RCD': SCALES.PURPLE[5],
 
   // ...Residential transit oriented
-  'RTO': SCALES.GREEN[5],
-  'RTO-M': SCALES.GREEN[5],
+  'RTO': SCALES.GREEN[6],
+  'RTO-M': SCALES.GREEN[6],
 
   // Neighborhood Commercial
   'NC-1': SCALES.GREEN[3],
@@ -104,48 +105,47 @@ var ZONE_COLORS = {
 
   // Special
   // ... Chinatown
-  'CCB': SCALES.BLUE[3],
-  'CRNC': SCALES.BLUE[3],
-  'CVR': SCALES.BLUE[3],
+  'CCB': SCALES.PURPLE[3],
+  'CRNC': SCALES.PURPLE[4],
+  'CVR': SCALES.PURPLE[5],
 
   // ... Hunter's Point
-  'HP-RA': SCALES.BLUE[3],
+  'HP-RA': SCALES.PURPLE[4],
 
   // ... Mission Bay
   'MB-O': SCALES.PURPLE[4],
-  'MB-OS': SCALES.BLUE[3],
-  'MB-RA': SCALES.BLUE[3],
-  'MUG': SCALES.GREEN[3],
-  'MUO': SCALES.BLUE[3],
-  'MUR': SCALES.GREEN[3],
+  'MB-OS': SCALES.PURPLE[3],
+  'MB-RA': SCALES.PURPLE[4],
+  'MUO': SCALES.PURPLE[4],
+  'MUG': SCALES.PURPLE[3],
+  'MUR': SCALES.PURPLE[4],
 
   // ... Park Merced
-  'PM-CF': SCALES.GREEN[3],
-  'PM-MU1': SCALES.GREEN[3],
-  'PM-MU2': SCALES.GREEN[3],
-  'PM-OS': SCALES.GREEN[3],
-  'PM-R': SCALES.GREEN[3],
-  'PM-S': SCALES.GREEN[3],
+  'PM-OS': SCALES.PURPLE[1],
+  'PM-S': SCALES.PURPLE[2],
+  'PM-CF': SCALES.PURPLE[3],
+  'PM-MU1': SCALES.PURPLE[4],
+  'PM-MU2': SCALES.PURPLE[5],
+  'PM-R': SCALES.PURPLE[3],
 
   // ... ???
-  'RCD': SCALES.PURPLE[2],
-  'RED': SCALES.PURPLE[2],
-  'RED-MX': SCALES.PURPLE[2],
-  'SALI': SCALES.PURPLE[2],
-  'SLI': SCALES.PURPLE[2],
-  'SPD': SCALES.PURPLE[2],
-  'SSO': SCALES.PURPLE[2],
-  'UMU': SCALES.PURPLE[2],
-  'WMUG': SCALES.PURPLE[2],
-  'WMUO': SCALES.PURPLE[2],
+  'RED': SCALES.PURPLE[3],
+  'RED-MX': SCALES.PURPLE[4],
+  'SALI': SCALES.PURPLE[5],
+  'SLI': SCALES.PURPLE[3],
+  'SPD': SCALES.PURPLE[4],
+  'SSO': SCALES.PURPLE[5],
+  'UMU': SCALES.PURPLE[3],
+  'WMUG': SCALES.PURPLE[4],
+  'WMUO': SCALES.PURPLE[5],
 
-  // ... Rincon Hill and Transbay
-  'RH DTR': SCALES.GREEN[6],
-  'TB DTR': SCALES.GREEN[6],
-  'SB-DTR': SCALES.GREEN[6],
+  // ... Rincon Hill, South Beach and Transbay
+  'RH DTR': SCALES.PURPLE[4],
+  'SB-DTR': SCALES.PURPLE[4],
+  'TB DTR': SCALES.PURPLE[4],
 
   // Public (not shown)
-  'P': SCALES.PURPLE[4]
+  'P': null
 }
 
 var LAND_USE_COLORS = {
@@ -210,7 +210,7 @@ function loadIndex () {
 
 function loadZoning () {
   const mapZoning = render(
-    <Map type='choropleth' getColor={getZoneColor} />,
+    <Map type='choropleth' getColor={getZoneColor} onSelect={onSelectZone} />,
     document.querySelector('#map-zoning')
   )
 
@@ -232,8 +232,35 @@ function loadZoning () {
 // Conscious choice not to use React here, since I might remove React and deck.gl entirely
 // and just use Mapbox layers for the visualization.
 function handleZoningEvents (mapZoning) {
-  const section = document.querySelector('section')
-  section.addEventListener('mouseover', () => mapZoning.setState({hover: -1}))
+  const elem = document.querySelector('.zones')
+  elem.addEventListener('mouseover', () => mapZoning.setState({hover: -1}))
+}
+
+function onSelectZone (index, data) {
+  const elem = document.querySelector('.zone-details')
+
+  if (index < 0) {
+    elem.style = 'display: none'
+    return
+  }
+
+  const feature = data.features[index]
+  const {id, idSimple} = feature.properties
+  const zones = data.properties.zones
+  let zone = zones[id]
+  if (!zone) {
+    console.log('Missing zone ' + id)
+    zone = {name: 'UNKNOWN', legalURL: ''}
+  }
+  const {name, legalURL} = zone
+
+  elem.style = 'display: block'
+  elem.querySelector('.id').innerText = id
+  elem.querySelector('.simple-id').innerText = idSimple
+  elem.querySelector('.simple-id-wrap').style = idSimple === id ? 'display: none' : ''
+  elem.querySelector('.name').innerText = name
+  elem.querySelector('.legal-link').href = legalURL
+  elem.querySelector('.legal-link').innerText = id + ' code'
 }
 
 function getLotDensityColor (row) {
@@ -246,10 +273,7 @@ function getLotUseColor (props) {
 
 function getZoneColor (props) {
   var color = ZONE_COLORS[props.idSimple]
-  if (!color) {
-    console.error('Missing color for ' + props.idSimple)
-    return SCALES.PURPLE[0]
-  }
+  if (!color) throw new Error('Missing color for ' + props.idSimple)
   return color
 }
 
