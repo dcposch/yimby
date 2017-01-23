@@ -30,6 +30,25 @@ body {
   width: 300px;
 }
 
+.legend span {
+  display: inline-block;
+  cursor: pointer;
+  border-top: 10px solid #000;
+}
+
+.legend span.selected,
+.selected .legend span {
+  font-weight: bold;
+}
+
+.legend span::after {
+  content: attr(title);
+  font-weight: bold;
+  overflow: hidden;
+  height: 1px;
+  display: block;
+}
+
 h1 {
   font-size: 45px;
 }

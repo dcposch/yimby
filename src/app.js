@@ -57,8 +57,8 @@ var ZONE_COLORS = {
   'RH-1(D)': SCALES.RED[6],
   'RH-1': SCALES.RED[5],
   'RH-1(S)': SCALES.RED[4],
-  'RH-2': SCALES.RED[4],
-  'RH-3': SCALES.RED[4],
+  'RH-2': SCALES.RED[3],
+  'RH-3': SCALES.RED[3],
 
   // ...Residential mixed
   'RM-1': SCALES.GREEN[2],
@@ -69,11 +69,27 @@ var ZONE_COLORS = {
   // ...Residential commercial combined
   'RC-3': SCALES.GREEN[4],
   'RC-4': SCALES.GREEN[5],
-  'RCD': SCALES.PURPLE[5],
+  'RCD': SCALES.GREEN[5],
 
   // ...Residential transit oriented
   'RTO': SCALES.GREEN[6],
   'RTO-M': SCALES.GREEN[6],
+
+  // ... Rincon Hill, South Beach and Transbay Downtown Residential
+  'RH DTR': SCALES.GREEN[5],
+  'SB-DTR': SCALES.GREEN[5],
+  'TB DTR': SCALES.GREEN[5],
+
+  // ... SoMa stuff, Urban Mixed Use and Residential Enclave
+  'WMUO': SCALES.GREEN[2],
+  'WMUG': SCALES.GREEN[3],
+  'UMU': SCALES.GREEN[4],
+  'RED': SCALES.GREEN[5],
+  'RED-MX': SCALES.GREEN[5],
+  'MUO': SCALES.GREEN[2],
+  'MUG': SCALES.GREEN[3],
+  'MUR': SCALES.GREEN[4],
+  'SSO': SCALES.GREEN[2],
 
   // Neighborhood Commercial
   'NC-1': SCALES.GREEN[3],
@@ -82,17 +98,17 @@ var ZONE_COLORS = {
   'NC-S': SCALES.GREEN[6],
   'NCD': SCALES.GREEN[6],
   'NCT': SCALES.GREEN[6],
-  'NCT-1': SCALES.GREEN[5],
+  'NCT-1': SCALES.GREEN[3],
   'NCT-2': SCALES.GREEN[4],
-  'NCT-3': SCALES.GREEN[3],
+  'NCT-3': SCALES.GREEN[5],
 
   // Commercial
-  'C-2': SCALES.BLUE[4],
-  'C-3-G': SCALES.BLUE[5],
+  'C-2': SCALES.BLUE[2],
+  'C-3-G': SCALES.BLUE[4],
   'C-3-O': SCALES.BLUE[5],
   'C-3-O(SD)': SCALES.BLUE[6],
-  'C-3-R': SCALES.BLUE[5],
-  'C-3-S': SCALES.BLUE[5],
+  'C-3-R': SCALES.BLUE[3],
+  'C-3-S': SCALES.BLUE[3],
 
   // Industrial
   'M-1': SCALES.ORANGE[5],
@@ -102,6 +118,9 @@ var ZONE_COLORS = {
   'PDR-1-D': SCALES.ORANGE[3],
   'PDR-1-G': SCALES.ORANGE[3],
   'PDR-2': SCALES.ORANGE[4],
+
+  'SALI': SCALES.ORANGE[4],
+  'SLI': SCALES.ORANGE[4],
 
   // Special
   // ... Chinatown
@@ -116,36 +135,20 @@ var ZONE_COLORS = {
   'MB-O': SCALES.PURPLE[4],
   'MB-OS': SCALES.PURPLE[3],
   'MB-RA': SCALES.PURPLE[4],
-  'MUO': SCALES.PURPLE[4],
-  'MUG': SCALES.PURPLE[3],
-  'MUR': SCALES.PURPLE[4],
 
   // ... Park Merced
-  'PM-OS': SCALES.PURPLE[1],
-  'PM-S': SCALES.PURPLE[2],
+  'PM-OS': SCALES.PURPLE[3],
+  'PM-S': SCALES.PURPLE[3],
   'PM-CF': SCALES.PURPLE[3],
   'PM-MU1': SCALES.PURPLE[4],
   'PM-MU2': SCALES.PURPLE[5],
-  'PM-R': SCALES.PURPLE[3],
+  'PM-R': SCALES.PURPLE[5],
 
-  // ... ???
-  'RED': SCALES.PURPLE[3],
-  'RED-MX': SCALES.PURPLE[4],
-  'SALI': SCALES.PURPLE[5],
-  'SLI': SCALES.PURPLE[3],
-  'SPD': SCALES.PURPLE[4],
-  'SSO': SCALES.PURPLE[5],
-  'UMU': SCALES.PURPLE[3],
-  'WMUG': SCALES.PURPLE[4],
-  'WMUO': SCALES.PURPLE[5],
-
-  // ... Rincon Hill, South Beach and Transbay
-  'RH DTR': SCALES.PURPLE[4],
-  'SB-DTR': SCALES.PURPLE[4],
-  'TB DTR': SCALES.PURPLE[4],
+  // ... South Park
+  'SPD': SCALES.PURPLE[4]
 
   // Public (not shown)
-  'P': null
+  // 'P': null
 }
 
 var LAND_USE_COLORS = {
@@ -161,6 +164,10 @@ var LAND_USE_COLORS = {
   VACANT: [227, 26, 28],
   'MISSING DATA': [253, 191, 111],
   'OpenSpace': [0, 0, 0, 0]
+}
+
+const state = {
+  filteredZoneID: null
 }
 
 main()
@@ -234,18 +241,59 @@ function loadZoning () {
 function handleZoningEvents (mapZoning) {
   const elem = document.querySelector('.zones')
   elem.addEventListener('mouseover', () => mapZoning.setState({hover: -1}))
+
+  // Legend
+  const hasLegend = {}
+  elem.querySelectorAll('.legend span').forEach(function (legendElem) {
+    const id = legendElem.innerText
+    const color = ZONE_COLORS[id]
+    if (!color) throw new Error('missing zone ' + id)
+    hasLegend[id] = true
+    legendElem.style.borderTopColor = toHtmlColor(color)
+    legendElem.title = id
+    legendElem.addEventListener('click', () => filterToZoneID(id, legendElem, mapZoning))
+  })
+  const numZones = Object.keys(ZONE_COLORS).length
+  const numZonesInLegend = Object.keys(hasLegend).length
+  if (numZones !== numZonesInLegend) {
+    throw new Error(numZones + ' zones, only ' + numZonesInLegend + ' in legend')
+  }
+}
+
+function filterToZoneID (id, legendElem, mapZoning) {
+  var selectedElem = document.querySelector('.legend span.selected')
+  if (selectedElem) selectedElem.classList.remove('selected')
+  if (id === state.filteredZoneID) {
+    legendElem.classList.remove('selected')
+    state.filteredZoneID = null
+  } else {
+    legendElem.classList.add('selected')
+    state.filteredZoneID = id
+  }
+
+  const updateTriggers = {color: state.filteredZoneID}
+  mapZoning.setState({updateTriggers, hover: -1, select: -1})
+}
+
+function toHtmlColor (color) {
+  return '#' + color.map((c) => (c + 256).toString(16).substring(1)).join('')
 }
 
 function onSelectZone (index, data) {
   const elem = document.querySelector('.zone-details')
 
   if (index < 0) {
-    elem.style = 'display: none'
+    elem.style.display = 'none'
     return
   }
 
   const feature = data.features[index]
   const {id, idSimple} = feature.properties
+  if (state.filteredZoneID && state.filteredZoneID !== idSimple) {
+    elem.style.display = 'none'
+    return
+  }
+
   const zones = data.properties.zones
   let zone = zones[id]
   if (!zone) {
@@ -254,10 +302,10 @@ function onSelectZone (index, data) {
   }
   const {name, legalURL} = zone
 
-  elem.style = 'display: block'
+  elem.style.display = 'block'
   elem.querySelector('.id').innerText = id
   elem.querySelector('.simple-id').innerText = idSimple
-  elem.querySelector('.simple-id-wrap').style = idSimple === id ? 'display: none' : ''
+  elem.querySelector('.simple-id-wrap').style.display = idSimple === id ? 'none' : ''
   elem.querySelector('.name').innerText = name
   elem.querySelector('.legal-link').href = legalURL
   elem.querySelector('.legal-link').innerText = id + ' code'
@@ -271,10 +319,17 @@ function getLotUseColor (props) {
   return LAND_USE_COLORS[props.landuse]
 }
 
-function getZoneColor (props) {
+function getZoneColor (props, isHover, isSelect) {
+  let alpha = 0.6
+  if (isHover) alpha = 0.7
+  else if (isSelect) alpha = 1.0
+  if (state.filteredZoneID && state.filteredZoneID !== props.idSimple) alpha = 0
+
   var color = ZONE_COLORS[props.idSimple]
   if (!color) throw new Error('Missing color for ' + props.idSimple)
-  return color
+
+  const rgba = [].concat(color, [Math.round(alpha * 255)])
+  return rgba
 }
 
 function fetch (url, cb) {

@@ -14,6 +14,7 @@ module.exports = class Map extends Component {
       hover: -1,
       select: -1,
       data: null,
+      updateTriggers: {},
       viewport: {
         latitude: 37.78,
         longitude: -122.44,
@@ -34,7 +35,7 @@ module.exports = class Map extends Component {
     // if (data === null) this.layer = null
     // else if (data !== null && this.layer === null) this.layer = this.createLayer()
     // const layers = this.layer ? [this.layer] : []
-    const layers = data ? [this.createLayer()] : []
+    const layers = data ? [this.renderLayer()] : []
 
     // Alternate mapStyles:
     // - Light: mapbox://styles/mapbox/light-v9
@@ -61,9 +62,9 @@ module.exports = class Map extends Component {
     )
   }
 
-  createLayer () {
+  renderLayer () {
     const {type} = this.props
-    const {data, hover, select} = this.state
+    const {data, hover, select, updateTriggers} = this.state
 
     if (type === 'scatter') {
       return new ScatterplotLayer({
@@ -86,15 +87,11 @@ module.exports = class Map extends Component {
         getColor: (f) => {
           const props = f.properties
           const index = props.index
-          let alpha = 0.6
-          if (index === hover) alpha = 0.8
-          else if (index === select) alpha = 1.0
-          const color = this.props.getColor(props)
-          if (!color || color.length !== 3) {
+          const color = this.props.getColor(props, index === hover, index === select)
+          if (!color || color.length !== 4) {
             throw new Error('Invalid color ' + color)
           }
-          const rgba = [].concat(color, [Math.round(alpha * 255)])
-          return rgba
+          return color
         },
         pickable: true,
         onHover: (info) => {
@@ -113,7 +110,7 @@ module.exports = class Map extends Component {
           }
         },
         updateTriggers: {
-          colors: {hover: this.state.hover, select: this.state.select}
+          colors: {hover, select, userTrigger: updateTriggers.color}
         }
       })
     } else {
