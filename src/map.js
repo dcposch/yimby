@@ -103,7 +103,6 @@ module.exports = class Map extends Component {
           }
         },
         onClick: (info) => {
-          if (this.state.select === info.index) return // already selected
           this.setState({select: info.index, hover: -1})
           if (this.props.onSelect) {
             this.props.onSelect.call(this, info.index, this.state.data)

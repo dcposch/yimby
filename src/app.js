@@ -267,10 +267,10 @@ function filterToZone (id, legendElem, mapZoning) {
   var selectedElem = document.querySelector('.legend span.selected')
   if (selectedElem) selectedElem.classList.remove('selected')
   if (id === state.filteredZoneSimpleID) {
-    legendElem.classList.remove('selected')
+    if (legendElem) legendElem.classList.remove('selected')
     state.filteredZoneSimpleID = null
   } else {
-    legendElem.classList.add('selected')
+    if (legendElem) legendElem.classList.add('selected')
     state.filteredZoneSimpleID = id
   }
 
@@ -286,7 +286,8 @@ function toHtmlColor (color) {
 
 function onSelectZone (index, data) {
   state.selectedZoneIndex = index
-  updateZoneDetails(this)
+  if (index < 0) filterToZone(null, null, this)
+  else updateZoneDetails(this)
 }
 
 function updateZoneDetails (mapZoning) {
