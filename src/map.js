@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import DeckGL from 'deck.gl/src/react/deckgl'
-// import DeckGL from 'deck.gl/react'
+// import DeckGL from 'deck.gl/src/react/deckgl'
+import DeckGL from 'deck.gl/react'
 import {ScatterplotLayer, ChoroplethLayer, ScreenDoorLayer} from 'deck.gl'
 import MapGL from 'react-map-gl'
 import config from './config'

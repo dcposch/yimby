@@ -30,7 +30,7 @@
     "postinstall": "npm run build",
     "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
-    "watch": "watchify -t babelify src/app.js -o static/build/bundle.js",
+    "watch": "watchify -t babelify src/app.js -o static/build/bundle.js -v",
     "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
     "test": "standard"
   },
