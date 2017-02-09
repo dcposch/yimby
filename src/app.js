@@ -167,6 +167,7 @@ var LAND_USE_COLORS = {
 }
 
 const state = {
+  selectedSupporterIndex: -1,
   filteredZoneSimpleID: null,
   selectedZoneIndex: -1,
   data: {}
@@ -186,6 +187,8 @@ function main () {
       return loadIndex()
     case '/zoning/':
       return loadZoning()
+    case '/supporters/':
+      return loadSupporters()
     default:
       console.error('Unknown path')
   }
@@ -236,6 +239,31 @@ function loadZoning () {
   })
 
   handleZoningEvents(mapZoning)
+}
+
+function loadSupporters () {
+  const mapSupporters = render(
+    <Map type='scatter' getColor={getSupporterColor} onSelect={onSelectSupporter} />,
+    document.querySelector('#map-supporters')
+  )
+
+  fetch('../build/supporters.json', function (data) {
+    state.data.supporters = data
+    mapSupporters.setState({data})
+  })
+}
+
+function getSupporterColor () {
+  return [0, 255, 255, 255]
+}
+
+function onSelectSupporter (index, data) {
+  state.selectedSupporterIndex = index
+  updateSupporterDetails(this)
+}
+
+function updateSupporterDetails () {
+  console.log('DBG TODO: SUPPORTER ' + state.selectedSupporterIndex)
 }
 
 // Update the detail panes via direct DOM manipulation.
