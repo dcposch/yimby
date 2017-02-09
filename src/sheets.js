@@ -95,17 +95,30 @@ function appendPre (message) {
  */
 function listMajors () {
   gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-    range: 'Class Data!A2:E'
+    spreadsheetId: '1pPN2Jt9TvCurtDYjXrtNucGI1G8bDMOgCzwNLKhPjP4',
+    range: 'All Contacts!A2:E'
   }).then(function (response) {
     var range = response.result
     if (range.values.length > 0) {
       appendPre('Name, Major:')
-      for (var i = 0; i < range.values.length; i++) {
-        var row = range.values[i]
+      const supporters = range.values.map(function (row) {
         // Print columns A and E, which correspond to indices 0 and 4.
-        appendPre(row[0] + ', ' + row[4])
-      }
+        appendPre(row.join(' - '))
+
+        const name = row[0]
+        const email = row[1]
+        const address = row[2] === ',' ? '' : row[2]
+        const phone = row[3]
+        const originList = row[4]
+        return {name, email, address, phone, originList}
+      }).filter(function (person) {
+        if (!person.name && !person.email) {
+          console.log('Skipping person, no name, no email')
+          return false
+        }
+        return true
+      })
+      window.onLoadSupporters(supporters)
     } else {
       appendPre('No data found.')
     }

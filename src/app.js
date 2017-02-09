@@ -4,6 +4,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import Map from './map'
 import Sheets from './sheets'
+import config from './config'
 
 const SCALES = {
   GREEN: [
@@ -243,16 +244,45 @@ function loadZoning () {
 }
 
 function loadSupporters () {
-  Sheets.init()
-
   const mapSupporters = render(
-    <Map type='scatter' getColor={getSupporterColor} onSelect={onSelectSupporter} />,
+    <Map type='supporters' getColor={getSupporterColor} onSelect={onSelectSupporter} />,
     document.querySelector('#map-supporters')
   )
 
-  fetch('../build/supporters.json', function (data) {
-    state.data.supporters = data
-    mapSupporters.setState({data})
+  // TODO: use a class, use a module
+  Sheets.init()
+  window.onLoadSupporters = onLoadSupporters
+  window.mapSupporters = mapSupporters
+
+  function onLoadSupporters (supporters) {
+    window.supporters = supporters
+    window.geoIndex = 0
+    // Geocode
+    mapSupporters.setState({data: supporters})
+    geocodeNext()
+    fetch('///geocoding/v5/{mode}/')
+  }
+}
+
+function geocodeNext () {
+  if (window.geoIndex >= window.supporters.length) return
+  const supporter = window.supporters[window.geoIndex++]
+  const address = supporter.address
+  if (!address) setTimeout(geocodeNext, 0)
+
+  console.log('DBG geocoding ' + address)
+  const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+    address + '.json?access_token=' + config.MAPBOX_TOKEN
+  fetch(url, function (data) {
+    console.log('DBG got geocode', data)
+    if (data.features) {
+      supporter.geo = data.features[0]
+    }
+    // TODO: remove this nasty hack
+    if (window.geoIndex % 50 === 0) {
+      window.mapSupporters.setState({data: window.supporters.slice()})
+    }
+    geocodeNext()
   })
 }
 

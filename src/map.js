@@ -79,6 +79,27 @@ module.exports = class Map extends Component {
         },
         pickable: false
       })
+    } else if (type === 'supporters') {
+      return new ScatterplotLayer({
+        data,
+        opacity: 1,
+        getPosition: (row) => {
+          if (!row.geo) {
+            return [37.761955 + Math.random() * 0.01, -122.336317 + Math.random() * 0.01]
+          }
+          return row.geo.center
+        },
+        getRadius: (row, i) => {
+          return 2
+        },
+        getColor: (row, i) => {
+          return [0, 255, 255, 255]
+        },
+        pickable: true,
+        onClick: function (info) {
+          console.log('DBG click supporter', info)
+        }
+      })
     } else if (type === 'choropleth') {
       if (data) data.features.forEach((x, i) => { x.properties.index = i })
       return new ChoroplethLayer({
