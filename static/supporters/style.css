@@ -5,7 +5,7 @@ body {
   overflow: hidden;
 }
 
-.zones {
+.summary {
   position: absolute;
   top: 20px;
   left: 20px;
@@ -14,15 +14,15 @@ body {
   overflow: scroll;
 }
 
-.zones,
-.zone-details {
+.summary,
+.details {
   padding: 0 28px;
   background-color: #fff;
   color: #222;
   opacity: 0.85;
 }
 
-.zone-details {
+.details {
   display: none;
   position: absolute;
   top: 20px;

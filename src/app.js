@@ -3,6 +3,7 @@ import 'babel-polyfill'
 import React from 'react'
 import {render} from 'react-dom'
 import Map from './map'
+import Sheets from './sheets'
 
 const SCALES = {
   GREEN: [
@@ -242,6 +243,8 @@ function loadZoning () {
 }
 
 function loadSupporters () {
+  Sheets.init()
+
   const mapSupporters = render(
     <Map type='scatter' getColor={getSupporterColor} onSelect={onSelectSupporter} />,
     document.querySelector('#map-supporters')
