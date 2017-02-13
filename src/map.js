@@ -18,21 +18,18 @@ module.exports = class Map extends React.Component {
   constructor (props) {
     super()
     this.props = props
-    this.state = {
-      viewport: {
-        latitude: 37.78,
-        longitude: -122.44,
-        zoom: 12,
-        bearing: 0,
-        pitch: 0
-      }
-    }
   }
 
   render () {
-    const {viewport} = this.state
+    const {layers, onChangeViewport} = this.props
 
-    const {layers} = this.props
+    const viewport = this.props.viewport || {
+      latitude: 37.78,
+      longitude: -122.44,
+      zoom: 12,
+      bearing: 0,
+      pitch: 0
+    }
 
     // Default to full-screen
     const width = this.props.width || window.innerWidth
@@ -48,7 +45,7 @@ module.exports = class Map extends React.Component {
       <MapGL
         {...viewport}
         mapStyle={mapStyle}
-        onChangeViewport={v => this.setState({viewport: v})}
+        onChangeViewport={(v) => onChangeViewport(v)}
         preventStyleDiffing={false}
         mapboxApiAccessToken={config.MAPBOX_TOKEN}
         perspectiveEnabled

@@ -155,19 +155,26 @@ module.exports = class ZoningMap extends React.Component {
     this.state = {
       data: null,
       select: -1,
-      hover: -1
+      hover: -1,
+      viewport: null
     }
   }
 
   render () {
-    const {data} = this.state
+    const {data, viewport} = this.state
     const layers = []
     if (data) {
       data.features.forEach((x, i) => { x.properties.index = i })
       layers.push(this.renderZoningLayer())
     }
 
-    return <Map layers={layers} />
+    return (
+      <Map
+        layers={layers}
+        viewport={viewport}
+        onChangeViewport={(v) => this.setState({viewport: v})}
+      />
+    )
   }
 
   renderZoningLayer () {
@@ -179,12 +186,12 @@ module.exports = class ZoningMap extends React.Component {
 
       getColor: (f) => {
         const props = f.properties
-        return this.getZoneColor(props)
+        return this.getZoneColor(props, props.index === hover, props.index === select)
       },
 
       onHover: (info) => {
         if (info.index > 0 && info.index === select) return // already selected
-        if (info.index === hover) return // already hovered
+        if (info.index === hover) return // already hovered)
         this.setState({hover: info.index})
       },
 
