@@ -45,6 +45,8 @@ body {
   font-weight: bold;
 }
 
+/* create a hidden element, so that the width doesn't change when
+ * select or unselect this label on a legend (toggles bold font weight) */
 .legend span::after {
   content: attr(title);
   font-weight: bold;

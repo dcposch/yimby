@@ -2,7 +2,7 @@ import 'babel-polyfill'
 
 import React from 'react'
 import {render} from 'react-dom'
-import ZoningMap from './zoning-map'
+import Zoning from './zoning'
 import SupportersMap from './supporters-map'
 import Sheets from './sheets'
 import config from './config'
@@ -18,7 +18,7 @@ function main () {
   console.log('Loading ' + path)
   switch (path) {
     case '/':
-      return loadIndex()
+      return
     case '/zoning/':
       return loadZoning()
     case '/supporters/':
@@ -28,14 +28,10 @@ function main () {
   }
 }
 
-function loadIndex () {
-  // TODO
-}
-
 function loadZoning () {
-  const mapZoning = render(
-    <ZoningMap />,
-    document.querySelector('#map-zoning')
+  const mapZoning = window.mapZoning = render(
+    <Zoning />,
+    document.querySelector('#container')
   )
 
   fetch('../build/zoning-geojson.json', function (data) {
@@ -53,7 +49,7 @@ function loadZoning () {
 function loadSupporters () {
   const mapSupporters = render(
     <SupportersMap />,
-    document.querySelector('#map-supporters')
+    document.querySelector('#container')
   )
 
   // TODO: use a class, use a module

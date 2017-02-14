@@ -23,7 +23,6 @@ body {
 }
 
 .zone-details {
-  display: none;
   position: absolute;
   top: 20px;
   left: 616px;
