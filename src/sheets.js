@@ -56,7 +56,7 @@ function updateSigninStatus (isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none'
     signoutButton.style.display = 'block'
-    listMajors()
+    loadData()
   } else {
     authorizeButton.style.display = 'block'
     signoutButton.style.display = 'none'
@@ -78,33 +78,16 @@ function handleSignoutClick (event) {
 }
 
 /**
- * Append a pre element to the body containing the given message
- * as its text node. Used to display the results of the API call.
- *
- * @param {string} message Text to be placed in pre element.
+ * TODO: make this a module, stop hardcoding
  */
-function appendPre (message) {
-  var pre = document.getElementById('content')
-  var textContent = document.createTextNode(message + '\n')
-  pre.appendChild(textContent)
-}
-
-/**
- * Print the names and majors of students in a sample spreadsheet:
- * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
- */
-function listMajors () {
+function loadData () {
   gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1pPN2Jt9TvCurtDYjXrtNucGI1G8bDMOgCzwNLKhPjP4',
     range: 'All Contacts!A2:E'
   }).then(function (response) {
     var range = response.result
     if (range.values.length > 0) {
-      appendPre('Name, Major:')
       const supporters = range.values.map(function (row) {
-        // Print columns A and E, which correspond to indices 0 and 4.
-        appendPre(row.join(' - '))
-
         const name = row[0]
         const email = row[1]
         const address = row[2] === ',' ? '' : row[2]
@@ -120,9 +103,9 @@ function listMajors () {
       })
       window.onLoadSupporters(supporters)
     } else {
-      appendPre('No data found.')
+      console.log('No data found.')
     }
   }, function (response) {
-    appendPre('Error: ' + response.result.error.message)
+    console.error(response.result.error.message)
   })
 }

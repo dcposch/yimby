@@ -3,7 +3,7 @@ import 'babel-polyfill'
 import React from 'react'
 import {render} from 'react-dom'
 import Zoning from './zoning'
-import SupportersMap from './supporters-map'
+import Supporters from './supporters'
 import Sheets from './sheets'
 import config from './config'
 
@@ -47,8 +47,8 @@ function loadZoning () {
 }
 
 function loadSupporters () {
-  const mapSupporters = render(
-    <SupportersMap />,
+  const mapSupporters = window.mapSupporters = render(
+    <Supporters />,
     document.querySelector('#container')
   )
 
@@ -58,32 +58,40 @@ function loadSupporters () {
   window.mapSupporters = mapSupporters
 
   function onLoadSupporters (supporters) {
+    supporters.forEach(function (supporter) {
+      supporter.geo = {
+        center: [-122.57 + randn() * 0.01, 37.78 + randn() * 0.01]
+      }
+    })
     window.supporters = supporters
     window.geoIndex = 0
+    window.numSucceeded = 0
+    window.numFailed = 0
     // Geocode
     mapSupporters.setState({data: supporters})
     geocodeNext()
-    fetch('///geocoding/v5/{mode}/')
   }
 }
 
 function geocodeNext () {
-  if (window.geoIndex >= window.supporters.length) return
+  if (window.geoIndex >= 50) return
   const supporter = window.supporters[window.geoIndex++]
   const address = supporter.address
   if (!address) setTimeout(geocodeNext, 0)
 
-  console.log('DBG geocoding ' + address)
   const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
     address + '.json?access_token=' + config.MAPBOX_TOKEN
   fetch(url, function (data) {
-    console.log('DBG got geocode', data)
-    if (data.features) {
+    if (data.features && data.features[0]) {
       supporter.geo = data.features[0]
+      window.numSucceeded++
+    } else {
+      window.numFailed++
     }
-    // TODO: remove this nasty hack
-    if (window.geoIndex % 50 === 0) {
-      window.mapSupporters.setState({data: window.supporters.slice()})
+
+    if (window.geoIndex % 10 === 0) {
+      const {numSucceeded, numFailed} = window
+      window.mapSupporters.setState({numSucceeded, numFailed})
     }
     geocodeNext()
   })
@@ -95,4 +103,10 @@ function fetch (url, cb) {
   xhr.responseType = 'json'
   xhr.open('GET', url)
   xhr.send()
+}
+
+function randn () {
+  var u = 1 - Math.random() // Subtraction to flip [0, 1) to (0, 1]
+  var v = 1 - Math.random()
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
 }
