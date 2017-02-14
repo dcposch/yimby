@@ -43,7 +43,7 @@ module.exports = function Summary (props) {
         <span>D11</span>
       </p>
       <p>
-        <strong>coming soon:</strong> click on a district above for details.
+        <strong>coming soon:</strong> click on a district above to filter.
       </p>
 
       <footer>

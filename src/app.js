@@ -58,9 +58,10 @@ function loadSupporters () {
   window.mapSupporters = mapSupporters
 
   function onLoadSupporters (supporters) {
-    supporters.forEach(function (supporter) {
+    supporters.forEach(function (supporter, index) {
+      supporter.index = index
       supporter.geo = {
-        center: [-122.57 + randn() * 0.01, 37.78 + randn() * 0.01]
+        center: [-122.57 + (index % 25) * 0.0017, 37.7 + Math.floor(index / 25) * 0.0014]
       }
     })
     window.supporters = supporters
@@ -74,26 +75,46 @@ function loadSupporters () {
 }
 
 function geocodeNext () {
-  if (window.geoIndex >= 50) return
+  if (window.geoIndex >= window.supporters.length) return // done
+
   const supporter = window.supporters[window.geoIndex++]
   const address = supporter.address
-  if (!address) setTimeout(geocodeNext, 0)
 
-  const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
-    address + '.json?access_token=' + config.MAPBOX_TOKEN
-  fetch(url, function (data) {
-    if (data.features && data.features[0]) {
+  fetchAddress(address, function (data) {
+    if (data && data.features && data.features[0]) {
       supporter.geo = data.features[0]
+      supporter.status = 'succeeded'
       window.numSucceeded++
     } else {
+      supporter.status = 'failed'
       window.numFailed++
     }
 
-    if (window.geoIndex % 10 === 0) {
+    if (window.geoIndex % 10 === 0 || window.geoIndex >= window.supporters.length) {
       const {numSucceeded, numFailed} = window
       window.mapSupporters.setState({numSucceeded, numFailed})
     }
     geocodeNext()
+  })
+}
+
+function fetchAddress (address, cb) {
+  if (!address) return cb()
+  address = address.trim()
+    .replace(/ US$/i, '')
+    .replace(/ USA$/i, '')
+    .replace(/ United States$/i, '')
+  if (address === '') return cb()
+
+  const json = window.localStorage[address]
+  if (json) return cb(JSON.parse(json))
+
+  console.log('Geocoding ' + address)
+  const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+    window.encodeURIComponent(address) + '.json?access_token=' + config.MAPBOX_TOKEN
+  fetch(url, function (data) {
+    window.localStorage[address] = JSON.stringify(data)
+    cb(data)
   })
 }
 
@@ -103,10 +124,4 @@ function fetch (url, cb) {
   xhr.responseType = 'json'
   xhr.open('GET', url)
   xhr.send()
-}
-
-function randn () {
-  var u = 1 - Math.random() // Subtraction to flip [0, 1) to (0, 1]
-  var v = 1 - Math.random()
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
 }
