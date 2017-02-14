@@ -7,8 +7,8 @@ module.exports = function Summary (props) {
     <div className='summary'>
       <h1>yimby supporters</h1>
       <p>
-        here's where our supporters live.
-        missing and invalid addresses are off to the left, in the ocean.
+        here's where our supporters live. click on any of the dots for details.
+        missing addresses are to the left, by ocean beach.
       </p>
 
       <h2>google sheets api test</h2>
@@ -23,9 +23,15 @@ module.exports = function Summary (props) {
       </p>
       <p>
         loaded <strong>{numSupporters}</strong> supporters<br />
-        got lat/lon for <strong>{numSucceeded}</strong> valid addresses<br />
-        found <strong>{numFailed}</strong> invalid or missing addresses<br />
-        {(numSucceeded + numFailed === numSupporters) ? 'done.' : 'looking up addresses with mapbox...'}
+        found coordinates for <strong>{numSucceeded}</strong> valid addresses<br />
+        found <strong>{numFailed}</strong> missing or invalid addresses<br />
+        <strong>
+          {
+            (numSucceeded + numFailed === numSupporters)
+              ? 'done.'
+              : 'looking up addresses with mapbox...'
+          }
+        </strong>
       </p>
 
       <h2>district</h2>
