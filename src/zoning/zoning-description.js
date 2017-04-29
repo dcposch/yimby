@@ -39,7 +39,7 @@ module.exports = function ZoningDescription (props) {
       <p>
         <strong>
           want a more inclusive, urban city to call home?
-          join <a href='https://sfyimby.org'>sf yimby</a>
+          <a href='//yimbyaction.org/join'>join yimby action</a>!
         </strong>
       </p>
 
@@ -115,7 +115,7 @@ module.exports = function ZoningDescription (props) {
       <p>
         <strong>
           want to build more housing?{' '}
-          <a href='https://www.yimbyaction.org/join'>donate to YIMBY Action.</a>.
+          <a href='//yimbyaction.org/give'>donate to yimby action</a>.
         </strong>
       </p>
       <p>
