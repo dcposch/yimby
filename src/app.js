@@ -4,8 +4,6 @@ import React from 'react'
 import {render} from 'react-dom'
 import Zoning from './zoning'
 import Contacts from './contacts'
-import Sheets from './sheets'
-import config from './config'
 
 main()
 
