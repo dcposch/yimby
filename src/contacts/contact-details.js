@@ -1,6 +1,6 @@
 import React from 'react'
 
-module.exports = function ContactDetails (props) {
+export default function ContactDetails (props) {
   const {name, address, email, phone, originList, totalDonation} = props.person
 
   return (

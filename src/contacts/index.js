@@ -1,13 +1,19 @@
 import React from 'react'
 import {ScatterplotLayer} from 'deck.gl'
+
+import fetch from '../fetch'
 import Map from '../map'
 import ContactDetails from './contact-details'
 import Summary from './summary'
 
-module.exports = class Contacts extends React.Component {
-  constructor () {
+const API_ROOT = 'https://na35.salesforce.com/services/data/v40.0'
+
+export default class Contacts extends React.Component {
+  constructor (props) {
     super()
+
     this.state = {
+      token: null,
       data: null,
       numSucceeded: 0,
       numFailed: 0,
@@ -17,8 +23,21 @@ module.exports = class Contacts extends React.Component {
     }
   }
 
+  componentWillMount () {
+    const token = readOauthAccessToken()
+    this.setState({token})
+    if (!token) return
+    fetch(API_ROOT + '/sobjects/Contact/', {'Authorization': 'Oauth ' + token}, (err, data) => {
+      // TODO: error handling
+      if (err) return console.error(err)
+      console.log(data)
+      // TODO: handle data
+    })
+  }
+
   render () {
-    const {data, select, viewport, numSucceeded, numFailed} = this.state
+    const {token, data, select, viewport, numSucceeded, numFailed} = this.state
+    const numContacts = data ? data.length : 0
     const person = data && data[select]
 
     return (
@@ -29,7 +48,7 @@ module.exports = class Contacts extends React.Component {
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
         {person ? <ContactDetails person={person} /> : null}
-        <Summary counts={{numContacts: data ? data.length : 0, numSucceeded, numFailed}} />
+        <Summary isLoggedIn={!!token} counts={{numContacts, numSucceeded, numFailed}} />
       </div>
     )
   }
@@ -72,4 +91,18 @@ module.exports = class Contacts extends React.Component {
       }
     })
   }
+}
+
+function readOauthAccessToken () {
+  const oauthParams = ['access_token']
+  document.location.hash.split('&').forEach((part) => {
+    const kv = part.split('=')
+    const k = kv[0]
+    const v = window.decodeURIComponent(kv[1])
+    if (oauthParams.includes(k)) {
+      window.localStorage.setItem('oauth_' + k, v)
+    }
+  })
+  document.location.hash = ''
+  return window.localStorage.getItem('oauth_access_token')
 }

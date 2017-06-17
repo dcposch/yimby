@@ -1,7 +1,7 @@
 // Usage:
 // zoneColors.rgb('RH-1') returns something like [200, 50, 50]
 // zoneColors.html('RH-1') returns something like '#aa2222'
-module.exports = {rgb, html}
+export default {rgb, html}
 
 const SCALES = {
   GREEN: [

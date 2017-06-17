@@ -2,7 +2,7 @@ import React from 'react'
 
 import zoneColors from './zone-colors'
 
-module.exports = function ZoningDescription (props) {
+export default function ZoningDescription (props) {
   const {selectedZone, onSelectZone} = props
 
   function renderLegend (ids) {

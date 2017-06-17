@@ -1,12 +1,13 @@
 import React from 'react'
 import {ChoroplethLayer} from 'deck.gl'
 
+import fetch from '../fetch'
 import Map from '../map'
 import ZoningDescription from './zoning-description'
 import ZoneDetails from './zone-details'
 import zoneColors from './zone-colors'
 
-module.exports = class ZoningMap extends React.Component {
+export default class ZoningMap extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -16,6 +17,17 @@ module.exports = class ZoningMap extends React.Component {
       viewport: null,
       filteredZoneSimpleID: null
     }
+  }
+
+  componentWillMount () {
+    fetch('../build/zoning-geojson.json', (data) => {
+      // Don't show public land like parks and highways.
+      // Filter it out here, not during data preprocessing, so that we can
+      // simplify / re-use / browser-cache the data sets we're loading.
+      // I might want to show public lots in a different visualization.
+      data.features = data.features.filter((f) => f.properties.idSimple !== 'P')
+      this.setState({data})
+    })
   }
 
   render () {

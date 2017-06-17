@@ -1,6 +1,6 @@
 import React from 'react'
 
-module.exports = function ZoneDetails (props) {
+export default function ZoneDetails (props) {
   const {id, idSimple, name, legalURL} = props.zone
   const simple = id === idSimple ? null : (
     <p>

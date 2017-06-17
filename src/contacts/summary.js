@@ -1,6 +1,7 @@
 import React from 'react'
 
-module.exports = function Summary (props) {
+export default function Summary (props) {
+  const {isLoggedIn} = props
   const {numContacts, numSucceeded, numFailed} = props.counts
 
   return (
@@ -14,12 +15,11 @@ module.exports = function Summary (props) {
       <h2>salesforce api</h2>
       <p>
         certified yimby party members only. if you have access to the
-        <a href='https://login.salesforce.com/'>yimby salesforce</a>,
-        you can authorize this page to map contacts.
+        yimby salesforce, you can authorize this page to map contacts.
       </p>
       <p>
-        <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
-&redirect_uri=https://dcpos.ch/yimby/contacts/'>sign in</a>
+        { isLoggedIn ? <span>logged in</span> : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
+&redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a> }
       </p>
       <p>
         loaded <strong>{numContacts}</strong> contacts<br />

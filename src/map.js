@@ -5,7 +5,7 @@ import config from './config'
 
 // Creates a map centered on San Francisco.
 // Lets the user move around, rotate, and zoom.
-module.exports = class Map extends React.Component {
+export default class Map extends React.Component {
   static get propTypes () {
     return {
       layers: React.PropTypes.array.isRequired,
