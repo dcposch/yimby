@@ -3,7 +3,7 @@ import 'babel-polyfill'
 import React from 'react'
 import {render} from 'react-dom'
 import Zoning from './zoning'
-import Supporters from './supporters'
+import Contacts from './contacts'
 import Sheets from './sheets'
 import config from './config'
 
@@ -21,8 +21,8 @@ function main () {
       return
     case '/zoning/':
       return loadZoning()
-    case '/supporters/':
-      return loadSupporters()
+    case '/contacts/':
+      return loadContacts()
     default:
       console.error('Unknown path')
   }
@@ -46,76 +46,11 @@ function loadZoning () {
   })
 }
 
-function loadSupporters () {
-  const mapSupporters = window.mapSupporters = render(
-    <Supporters />,
+function loadContacts () {
+  window.mapContacts = render(
+    <Contacts />,
     document.querySelector('#container')
   )
-
-  // TODO: use a class, use a module
-  Sheets.init()
-  window.onLoadSupporters = onLoadSupporters
-  window.mapSupporters = mapSupporters
-
-  function onLoadSupporters (supporters) {
-    supporters.forEach(function (supporter, index) {
-      supporter.index = index
-      supporter.geo = {
-        center: [-122.57 + (index % 25) * 0.0017, 37.7 + Math.floor(index / 25) * 0.0014]
-      }
-    })
-    window.supporters = supporters
-    window.geoIndex = 0
-    window.numSucceeded = 0
-    window.numFailed = 0
-    // Geocode
-    mapSupporters.setState({data: supporters})
-    geocodeNext()
-  }
-}
-
-function geocodeNext () {
-  if (window.geoIndex >= window.supporters.length) return // done
-
-  const supporter = window.supporters[window.geoIndex++]
-  const address = supporter.address
-
-  fetchAddress(address, function (data) {
-    if (data && data.features && data.features[0]) {
-      supporter.geo = data.features[0]
-      supporter.status = 'succeeded'
-      window.numSucceeded++
-    } else {
-      supporter.status = 'failed'
-      window.numFailed++
-    }
-
-    if (window.geoIndex % 10 === 0 || window.geoIndex >= window.supporters.length) {
-      const {numSucceeded, numFailed} = window
-      window.mapSupporters.setState({numSucceeded, numFailed})
-    }
-    geocodeNext()
-  })
-}
-
-function fetchAddress (address, cb) {
-  if (!address) return cb()
-  address = address.trim()
-    .replace(/ US$/i, '')
-    .replace(/ USA$/i, '')
-    .replace(/ United States$/i, '')
-  if (address === '') return cb()
-
-  const json = window.localStorage[address]
-  if (json) return cb(JSON.parse(json))
-
-  console.log('Geocoding ' + address)
-  const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
-    window.encodeURIComponent(address) + '.json?access_token=' + config.MAPBOX_TOKEN
-  fetch(url, function (data) {
-    window.localStorage[address] = JSON.stringify(data)
-    cb(data)
-  })
 }
 
 function fetch (url, cb) {

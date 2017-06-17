@@ -1,10 +1,10 @@
 import React from 'react'
 import {ScatterplotLayer} from 'deck.gl'
 import Map from '../map'
-import SupporterDetails from './supporter-details'
+import ContactDetails from './contact-details'
 import Summary from './summary'
 
-module.exports = class Supporters extends React.Component {
+module.exports = class Contacts extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -28,8 +28,8 @@ module.exports = class Supporters extends React.Component {
           viewport={viewport}
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
-        {person ? <SupporterDetails person={person} /> : null}
-        <Summary counts={{numSupporters: data ? data.length : 0, numSucceeded, numFailed}} />
+        {person ? <ContactDetails person={person} /> : null}
+        <Summary counts={{numContacts: data ? data.length : 0, numSucceeded, numFailed}} />
       </div>
     )
   }

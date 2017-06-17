@@ -1,37 +1,30 @@
 import React from 'react'
 
 module.exports = function Summary (props) {
-  const {numSupporters, numSucceeded, numFailed} = props.counts
+  const {numContacts, numSucceeded, numFailed} = props.counts
 
   return (
     <div className='summary'>
-      <h1>yimby supporters</h1>
+      <h1>yimby contacts</h1>
       <p>
-        here's where our supporters live. click on any of the dots for details.
+        here's where our contacts live. click on any of the dots for details.
         missing addresses are to the left, by ocean beach.
       </p>
 
-      <h2>google sheets api test</h2>
+      <h2>salesforce api</h2>
       <p>
-        certified yimby party members only. if you have access to the <a
-          href='https://docs.google.com/spreadsheets/d/1pPN2Jt9TvCurtDYjXrtNucGI1G8bDMOgCzwNLKhPjP4/edit#gid=0'>
-        contacts google spreadsheet</a>, you can authorize this page to map it.
+        certified yimby party members only. if you have access to the
+        <a href='https://login.salesforce.com/'>yimby salesforce</a>,
+        you can authorize this page to map contacts.
       </p>
       <p>
-        <button id='authorize-button' style={{display: 'none'}}>Authorize</button>
-        <button id='signout-button' style={{display: 'none'}}>Sign Out</button>
+        <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
+&redirect_uri=https://dcpos.ch/yimby/contacts/'>sign in</a>
       </p>
       <p>
-        loaded <strong>{numSupporters}</strong> supporters<br />
+        loaded <strong>{numContacts}</strong> contacts<br />
         found coordinates for <strong>{numSucceeded}</strong> valid addresses<br />
         found <strong>{numFailed}</strong> missing or invalid addresses<br />
-        <strong>
-          {
-            (numSucceeded + numFailed === numSupporters)
-              ? 'done.'
-              : 'looking up addresses with mapbox...'
-          }
-        </strong>
       </p>
 
       <h2>district</h2>

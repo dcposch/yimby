@@ -1,6 +1,6 @@
 import React from 'react'
 
-module.exports = function SupporterDetails (props) {
+module.exports = function ContactDetails (props) {
   const {name, address, email, phone, originList, totalDonation} = props.person
 
   return (
