@@ -48,6 +48,8 @@ export default class Contacts extends React.Component {
         totalDonationsUSD: r.npo02__TotalOppAmount__c
       })).filter(r => r.address.state === 'CA')
 
+      console.log('salesforce raw query response', data)
+      console.log('salesforce contacts', contacts)
       this.setState({contacts})
     })
 
@@ -85,7 +87,7 @@ export default class Contacts extends React.Component {
       radius: 1,
       pickable: true,
       getPosition: (contact) => {
-        return [contact.address.latitude, contact.address.longitude]
+        return [contact.address.longitude, contact.address.latitude]
       },
       getRadius: (row) => {
         const dotM = 2200 * Math.pow(0.7, zoom)
