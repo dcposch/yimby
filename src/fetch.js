@@ -5,8 +5,8 @@
 // })
 export default function fetch (url, headers, cb) {
   if (typeof headers === 'function') {
-    headers = {}
     cb = headers
+    headers = {}
   }
   const xhr = new window.XMLHttpRequest()
   xhr.onerror = () => cb(new Error(xhr.responseCode))
