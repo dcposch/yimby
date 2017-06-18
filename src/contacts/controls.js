@@ -1,8 +1,7 @@
 import React from 'react'
 
-export default function Summary (props) {
-  const {isLoggedIn} = props
-  const {numContacts, numSucceeded, numFailed} = props.counts
+export default function Controls (props) {
+  const {isLoggedIn, contacts} = props
 
   return (
     <div className='summary'>
@@ -18,13 +17,15 @@ export default function Summary (props) {
         yimby salesforce, you can authorize this page to map contacts.
       </p>
       <p>
-        { isLoggedIn ? <span>logged in</span> : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
-&redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a> }
+        {
+          isLoggedIn
+            ? <span>logged in</span>
+            : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
+  &redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a>
+        }
       </p>
       <p>
-        loaded <strong>{numContacts}</strong> contacts<br />
-        found coordinates for <strong>{numSucceeded}</strong> valid addresses<br />
-        found <strong>{numFailed}</strong> missing or invalid addresses<br />
+        loaded <strong>{contacts.length}</strong> contacts with valid addresses<br />
       </p>
 
       <h2>district</h2>

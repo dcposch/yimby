@@ -4,7 +4,7 @@ import {ScatterplotLayer} from 'deck.gl'
 import fetch from '../fetch'
 import Map from '../map'
 import ContactDetails from './contact-details'
-import Summary from './summary'
+import Controls from './controls'
 
 const API_ROOT = 'https://na35.salesforce.com/services/data/v40.0'
 
@@ -28,8 +28,9 @@ export default class Contacts extends React.Component {
 
     const url = API_ROOT + '/query?q=SELECT Name, Phone, Email, MailingAddress, ' +
       'Administrative_Area__c, State_Upper_District__c, State_Lower_District__c, ' +
-      'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude IS NOT NULL'
-    fetch(url, {'Authorization': 'OAuth ' + token}, (err, data) => {
+      'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude != NULL'
+    const headers = {'Authorization': 'OAuth ' + token}
+    fetch(url, headers, (err, data) => {
       // TODO: error handling
       if (err) return console.error(err)
 
@@ -51,7 +52,7 @@ export default class Contacts extends React.Component {
     })
 
     // For debugging
-    window.fetchSalesforce = (path) => fetch(API_ROOT + path, {'Authorization': 'OAuth ' + token}, (err, data) => {
+    window.fetchSalesforce = (path) => fetch(API_ROOT + path, headers, (err, data) => {
       if (err) return console.error(err)
       console.log(data)
     })
@@ -59,7 +60,6 @@ export default class Contacts extends React.Component {
 
   render () {
     const {token, contacts, select, viewport} = this.state
-    const numContacts = contacts.length
     const person = contacts[select]
 
     return (
@@ -70,7 +70,7 @@ export default class Contacts extends React.Component {
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
         {person ? <ContactDetails person={person} /> : null}
-        <Summary isLoggedIn={!!token} counts={{numContacts}} />
+        <Controls isLoggedIn={!!token} contacts={contacts} />
       </div>
     )
   }

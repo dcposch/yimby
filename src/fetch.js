@@ -10,7 +10,7 @@ export default function fetch (url, headers, cb) {
   }
   const xhr = new window.XMLHttpRequest()
   xhr.onerror = () => cb(new Error(xhr.responseCode))
-  xhr.onload = () => cb(xhr.responseCode === 200 ? null : new Error(xhr.responseCode), xhr.response)
+  xhr.onload = () => cb(xhr.status === 200 ? null : new Error(xhr.status), xhr.response)
   xhr.responseType = 'json'
   xhr.open('GET', url)
   Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]))
