@@ -1,8 +1,10 @@
 import React from 'react'
 import {ScatterplotLayer} from 'deck.gl'
 
+import config from '../config'
 import fetch from '../fetch'
 import Map from '../map'
+import geo from '../geo'
 import ContactDetails from './contact-details'
 import Controls from './controls'
 
@@ -17,7 +19,11 @@ export default class Contacts extends React.Component {
       contacts: [],
       select: null,
       hover: null,
-      viewport: null
+      viewport: null,
+      filter: {
+        radius: 100,
+        radiusAddress: null
+      }
     }
   }
 
@@ -30,7 +36,7 @@ export default class Contacts extends React.Component {
   }
 
   render () {
-    const {token, contacts, select, viewport} = this.state
+    const {token, contacts, select, viewport, filter} = this.state
 
     return (
       <div>
@@ -40,7 +46,14 @@ export default class Contacts extends React.Component {
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
         {select ? <ContactDetails person={select} /> : null}
-        <Controls isLoggedIn={!!token} onLogOut={() => this._handleLogOut()} contacts={contacts} />
+        <Controls
+          isLoggedIn={!!token}
+          onLogOut={() => this._handleLogOut()}
+          contacts={contacts}
+          radiusAddress={filter.radiusAddress}
+          onChangeRadius={(radius) => this._handleChangeRadius(radius)}
+          onChangeRadiusAddress={(addr) => this._handleChangeRadiusAddress(addr)}
+        />
       </div>
     )
   }
@@ -123,6 +136,41 @@ export default class Contacts extends React.Component {
     this._setStateFromLocalStorage()
   }
 
+  _handleChangeRadius (radius) {
+    this._setFilter({radius})
+  }
+
+  _handleChangeRadiusAddress (address) {
+    if (address === '') {
+      return this._setFilter({radiusAddress: null})
+    }
+
+    // Geocode via Mapbox
+    const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+      window.encodeURIComponent(address) + '.json?access_token=' + config.MAPBOX_TOKEN
+    fetch(url, (err, data) => {
+      if (err) console.error(err)
+      console.log(data)
+      let radiusAddress
+      if (data && data.features && data.features[0]) {
+        const feature = data.features[0]
+        radiusAddress = {
+          success: true,
+          name: feature.place_name,
+          coordinates: {
+            longitude: feature.center[0],
+            latitude: feature.center[1]
+          }
+        }
+      } else {
+        radiusAddress = {
+          success: false
+        }
+      }
+      this._setFilter({radiusAddress})
+    })
+  }
+
   _readOauthAccessToken () {
     const oauthParams = ['access_token']
     const hash = document.location.hash.substring(1)
@@ -135,5 +183,21 @@ export default class Contacts extends React.Component {
       }
     })
     document.location.hash = ''
+  }
+
+  _setFilter (filterDiff) {
+    var oldFilter = this.state.filter
+    var filter = Object.assign(oldFilter, filterDiff)
+    var filteredContacts = this.state.contacts.filter((contact) => {
+      if (filter.radiusAddress && filter.radiusAddress.success) {
+        var dist = geo.computeDistance(contact.address, filter.radiusAddress.coordinates)
+        if (dist > filter.radius) return false
+      }
+      if (filter.district !== null) {
+        if (contact.districts.city !== filter.district) return false
+      }
+      return true
+    })
+    this.setState({filter, filteredContacts})
   }
 }

@@ -18,13 +18,20 @@ export default function Controls (props) {
   let elemRadiusFilter = null
   if (radiusAddress) {
     elemRadiusFilter = (
-      <p>
-        filter to:
-        <button onClick={() => onChangeRadius(500)}>100m</button>
-        <button onClick={() => onChangeRadius(500)}>200m</button>
-        <button onClick={() => onChangeRadius(500)}>500m</button>
-        <button onClick={() => onChangeRadius(1000)}>1km</button>
-      </p>
+      <div>
+        <p>
+          { radiusAddress.success
+              ? <span>{radiusAddress.name}</span>
+              : 'couldn\'t geocode address' }
+        </p>
+        <p>
+          filter to:
+          <button className='btn-filter' onClick={() => onChangeRadius(100)}>100m</button>
+          <button className='btn-filter' onClick={() => onChangeRadius(200)}>200m</button>
+          <button className='btn-filter' onClick={() => onChangeRadius(500)}>500m</button>
+          <button className='btn-filter' onClick={() => onChangeRadius(1000)}>1km</button>
+        </p>
+      </div>
     )
   }
 
@@ -68,7 +75,10 @@ export default function Controls (props) {
 
       <h2>radius</h2>
       <p>
-        enter a location: <input class='radius-address' onChange={onChangeRadiusAddress} />
+        enter an address: <input
+          className='radius-address'
+          onChange={(e) => onChangeRadiusAddress(e.target.value)}
+        />
       </p>
       { elemRadiusFilter }
 

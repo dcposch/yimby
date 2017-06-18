@@ -126,3 +126,15 @@ button {
   border-radius: 3px;
   background: white;
 }
+
+input {
+  width: 300px;
+  padding: 0px 4px;
+  border: none;
+  border-bottom: 1px solid #888;
+  font: inherit;
+}
+
+.btn-filter {
+  margin-right: 8px;
+}
