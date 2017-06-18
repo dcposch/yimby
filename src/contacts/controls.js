@@ -1,7 +1,32 @@
 import React from 'react'
 
 export default function Controls (props) {
-  const {isLoggedIn, onLogOut, contacts} = props
+  const {
+    isLoggedIn,
+    onLogOut,
+    contacts,
+    radiusAddress,
+    onChangeRadius,
+    onChangeRadiusAddress
+  } = props
+
+  const elemLogin = isLoggedIn
+    ? <button onClick={onLogOut}>log out</button>
+    : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
+&redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a>
+
+  let elemRadiusFilter = null
+  if (radiusAddress) {
+    elemRadiusFilter = (
+      <p>
+        filter to:
+        <button onClick={() => onChangeRadius(500)}>100m</button>
+        <button onClick={() => onChangeRadius(500)}>200m</button>
+        <button onClick={() => onChangeRadius(500)}>500m</button>
+        <button onClick={() => onChangeRadius(1000)}>1km</button>
+      </p>
+    )
+  }
 
   return (
     <div className='summary'>
@@ -17,12 +42,7 @@ export default function Controls (props) {
         yimby salesforce, you can authorize this page to map contacts.
       </p>
       <p>
-        {
-          isLoggedIn
-            ? <button onClick={onLogOut}>log out</button>
-            : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
-  &redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a>
-        }
+        {elemLogin}
       </p>
       <p>
         loaded <strong>{contacts.length}</strong> contacts with valid addresses<br />
@@ -45,6 +65,12 @@ export default function Controls (props) {
       <p>
         <strong>coming soon:</strong> click on a district above to filter.
       </p>
+
+      <h2>radius</h2>
+      <p>
+        enter a location: <input class='radius-address' onChange={onChangeRadiusAddress} />
+      </p>
+      { elemRadiusFilter }
 
       <footer>
         yimby digital liberation army.
