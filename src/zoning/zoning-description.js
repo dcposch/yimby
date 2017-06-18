@@ -38,7 +38,7 @@ export default function ZoningDescription (props) {
       </p>
       <p>
         <strong>
-          want a more inclusive, urban city to call home?
+          want a more inclusive, urban city to call home?{' '}
           <a href='//yimbyaction.org/join'>join yimby action</a>!
         </strong>
       </p>

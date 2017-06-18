@@ -20,7 +20,8 @@ export default class ZoningMap extends React.Component {
   }
 
   componentWillMount () {
-    fetch('../build/zoning-geojson.json', (data) => {
+    fetch('../build/zoning-geojson.json', (err, data) => {
+      if (err) return console.error(err)
       // Don't show public land like parks and highways.
       // Filter it out here, not during data preprocessing, so that we can
       // simplify / re-use / browser-cache the data sets we're loading.
