@@ -50,7 +50,10 @@ export default class Contacts extends React.Component {
           isLoggedIn={!!token}
           onLogOut={() => this._handleLogOut()}
           contacts={contacts}
+          district={filter.district}
+          radius={filter.radius}
           radiusAddress={filter.radiusAddress}
+          onChangeDistrict={(district) => this._handleChangeDistrict(district)}
           onChangeRadius={(radius) => this._handleChangeRadius(radius)}
           onChangeRadiusAddress={(addr) => this._handleChangeRadiusAddress(addr)}
         />
@@ -134,6 +137,13 @@ export default class Contacts extends React.Component {
   _handleLogOut () {
     window.localStorage.setItem('oauth_access_token', null)
     this._setStateFromLocalStorage()
+  }
+
+  _handleChangeDistrict (district) {
+    if (this.state.filter.district === district) {
+      district = null
+    }
+    this._setFilter({district})
   }
 
   _handleChangeRadius (radius) {

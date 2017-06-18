@@ -1,11 +1,16 @@
 import React from 'react'
 
+import districts from './districts'
+
 export default function Controls (props) {
   const {
     isLoggedIn,
     onLogOut,
     contacts,
+    radius,
     radiusAddress,
+    district,
+    onChangeDistrict,
     onChangeRadius,
     onChangeRadiusAddress
   } = props
@@ -15,8 +20,16 @@ export default function Controls (props) {
     : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
 &redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a>
 
+  const elemsDistrictFilter = [1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 9, 0, 10, 0, 11]
+    .map((i, j) => {
+      if (i === 0) return ' '
+      var c = district === i ? 'selected' : ''
+      return <span key={j} className={c} onClick={() => onChangeDistrict(i)}>{'D' + i}</span>
+    })
+
   let elemRadiusFilter = null
   if (radiusAddress) {
+    const r = radius
     elemRadiusFilter = (
       <div>
         <p>
@@ -24,12 +37,14 @@ export default function Controls (props) {
               ? <span>{radiusAddress.name}</span>
               : 'couldn\'t geocode address' }
         </p>
+        <p className='legend'>
+          <span className={r === 100 ? 'selected' : ''} onClick={() => onChangeRadius(100)}>100m</span>{' '}
+          <span className={r === 200 ? 'selected' : ''} onClick={() => onChangeRadius(200)}>200m</span>{' '}
+          <span className={r === 500 ? 'selected' : ''} onClick={() => onChangeRadius(500)}>500m</span>{' '}
+          <span className={r === 1000 ? 'selected' : ''} onClick={() => onChangeRadius(1000)}>1km</span>
+        </p>
         <p>
-          filter to:
-          <button className='btn-filter' onClick={() => onChangeRadius(100)}>100m</button>
-          <button className='btn-filter' onClick={() => onChangeRadius(200)}>200m</button>
-          <button className='btn-filter' onClick={() => onChangeRadius(500)}>500m</button>
-          <button className='btn-filter' onClick={() => onChangeRadius(1000)}>1km</button>
+          click above to filter.
         </p>
       </div>
     )
@@ -57,20 +72,10 @@ export default function Controls (props) {
 
       <h2>district</h2>
       <p className='legend'>
-        <span>D1</span>{' '}
-        <span>D2</span>{' '}
-        <span>D3</span>{' '}
-        <span>D4</span>{' '}
-        <span>D5</span>{' '}
-        <span>D6</span>{' '}
-        <span>D7</span>{' '}
-        <span>D8</span>{' '}
-        <span>D9</span>{' '}
-        <span>D10</span>{' '}
-        <span>D11</span>
+        {elemsDistrictFilter}
       </p>
       <p>
-        <strong>coming soon:</strong> click on a district above to filter.
+        click on a district above to filter. click again to un-filter.
       </p>
 
       <h2>radius</h2>
