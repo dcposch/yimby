@@ -18,6 +18,7 @@ export default class Contacts extends React.Component {
       token: null,
       contacts: [],
       filteredContacts: [],
+      filterExport: '',
       select: null,
       hover: null,
       viewport: null,
@@ -38,7 +39,7 @@ export default class Contacts extends React.Component {
   }
 
   render () {
-    const {token, contacts, filteredContacts, select, viewport, filter} = this.state
+    const {token, contacts, filteredContacts, filterExport, select, viewport, filter} = this.state
 
     return (
       <div>
@@ -53,6 +54,7 @@ export default class Contacts extends React.Component {
           onLogOut={() => this._handleLogOut()}
           contacts={contacts}
           filteredContacts={filteredContacts}
+          filterExport={filterExport}
           district={filter.district}
           radius={filter.radius}
           radiusAddress={filter.radiusAddress}
@@ -220,6 +222,13 @@ export default class Contacts extends React.Component {
       contact.isFiltered = !ret
       return ret
     })
-    this.setState({filter, contacts, filteredContacts})
+
+    const filterExport = filteredContacts.length === contacts.length
+      ? ''
+      : filteredContacts
+          .filter((c) => !!c.email)
+          .map((c) => c.name + '<' + c.email + '>').join(', ')
+
+    this.setState({filter, contacts, filteredContacts, filterExport})
   }
 }

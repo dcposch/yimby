@@ -138,3 +138,7 @@ input {
 .btn-filter {
   margin-right: 8px;
 }
+
+pre {
+  overflow: hidden;
+}

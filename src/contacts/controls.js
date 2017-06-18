@@ -8,6 +8,7 @@ export default function Controls (props) {
     onLogOut,
     contacts,
     filteredContacts,
+    filterExport,
     radius,
     radiusAddress,
     district,
@@ -92,6 +93,11 @@ export default function Controls (props) {
         />
       </p>
       { elemRadiusFilter }
+
+      <h2>export</h2>
+      <pre>
+        {filterExport}
+      </pre>
 
       <footer>
         yimby digital liberation army.
