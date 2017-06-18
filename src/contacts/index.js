@@ -22,42 +22,11 @@ export default class Contacts extends React.Component {
   }
 
   componentWillMount () {
-    const token = readOauthAccessToken()
-    this.setState({token})
-    if (!token) return
-
-    const url = API_ROOT + '/query?q=SELECT Name, Phone, Email, MailingAddress, ' +
-      'Administrative_Area__c, State_Upper_District__c, State_Lower_District__c, ' +
-      'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude != NULL'
-    const headers = {'Authorization': 'OAuth ' + token}
-    fetch(url, headers, (err, data) => {
-      // TODO: error handling
-      if (err) return console.error(err)
-
-      const contacts = data.records.map((r, i) => ({
-        index: i,
-        name: r.Name,
-        email: r.Email,
-        phone: r.Phone,
-        address: r.MailingAddress,
-        districts: {
-          city: r.Administrative_Area__c,
-          stateLower: r.State_Upper_District__c,
-          stateUpper: r.State_Upper_District__c
-        },
-        totalDonationsUSD: r.npo02__TotalOppAmount__c
-      })).filter(r => r.address.state === 'CA')
-
-      console.log('salesforce raw query response', data)
-      console.log('salesforce contacts', contacts)
-      this.setState({contacts})
-    })
-
-    // For debugging
-    window.fetchSalesforce = (path) => fetch(API_ROOT + path, headers, (err, data) => {
-      if (err) return console.error(err)
-      console.log(data)
-    })
+    this._readOauthAccessToken()
+    this._setStateFromLocalStorage()
+    if (this.state.token) {
+      this._fetchContacts()
+    }
   }
 
   render () {
@@ -66,17 +35,17 @@ export default class Contacts extends React.Component {
     return (
       <div>
         <Map
-          layers={[this.renderScatterplotLayer()]}
+          layers={[this._renderScatterplotLayer()]}
           viewport={viewport}
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
         {select ? <ContactDetails person={select} /> : null}
-        <Controls isLoggedIn={!!token} contacts={contacts} />
+        <Controls isLoggedIn={!!token} onLogOut={() => this._handleLogOut()} contacts={contacts} />
       </div>
     )
   }
 
-  renderScatterplotLayer () {
+  _renderScatterplotLayer () {
     const {contacts, hover, select, viewport} = this.state
     const zoom = viewport ? viewport.zoom : 12
 
@@ -109,19 +78,62 @@ export default class Contacts extends React.Component {
       }
     })
   }
-}
 
-function readOauthAccessToken () {
-  const oauthParams = ['access_token']
-  const hash = document.location.hash.substring(1)
-  hash.split('&').forEach((part) => {
-    const kv = part.split('=')
-    const k = kv[0]
-    const v = window.decodeURIComponent(kv[1])
-    if (oauthParams.includes(k)) {
-      window.localStorage.setItem('oauth_' + k, v)
-    }
-  })
-  document.location.hash = ''
-  return window.localStorage.getItem('oauth_access_token')
+  _setStateFromLocalStorage () {
+    this.setState({token: window.localStorage.oauth_access_token})
+  }
+
+  _fetchContacts () {
+    const url = API_ROOT + '/query?q=SELECT Name, Phone, Email, MailingAddress, ' +
+      'Administrative_Area__c, State_Upper_District__c, State_Lower_District__c, ' +
+      'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude != NULL'
+    const headers = {'Authorization': 'OAuth ' + this.state.token}
+    fetch(url, headers, (err, data) => {
+      // TODO: error handling
+      if (err) return console.error(err)
+
+      const contacts = data.records.map((r, i) => ({
+        index: i,
+        name: r.Name,
+        email: r.Email,
+        phone: r.Phone,
+        address: r.MailingAddress,
+        districts: {
+          city: r.Administrative_Area__c,
+          stateLower: r.State_Upper_District__c,
+          stateUpper: r.State_Upper_District__c
+        },
+        totalDonationsUSD: r.npo02__TotalOppAmount__c
+      })).filter(r => r.address.state === 'CA')
+
+      console.log('salesforce raw query response', data)
+      console.log('salesforce contacts', contacts)
+      this.setState({contacts})
+    })
+
+    // For debugging
+    window.fetchSalesforce = (path) => fetch(API_ROOT + path, headers, (err, data) => {
+      if (err) return console.error(err)
+      console.log(data)
+    })
+  }
+
+  _handleLogOut () {
+    window.localStorage.setItem('oauth_access_token', null)
+    this._setStateFromLocalStorage()
+  }
+
+  _readOauthAccessToken () {
+    const oauthParams = ['access_token']
+    const hash = document.location.hash.substring(1)
+    hash.split('&').forEach((part) => {
+      const kv = part.split('=')
+      const k = kv[0]
+      const v = window.decodeURIComponent(kv[1])
+      if (oauthParams.includes(k)) {
+        window.localStorage.setItem('oauth_' + k, v)
+      }
+    })
+    document.location.hash = ''
+  }
 }

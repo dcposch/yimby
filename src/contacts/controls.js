@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function Controls (props) {
-  const {isLoggedIn, contacts} = props
+  const {isLoggedIn, onLogOut, contacts} = props
 
   return (
     <div className='summary'>
@@ -19,7 +19,7 @@ export default function Controls (props) {
       <p>
         {
           isLoggedIn
-            ? <span>logged in</span>
+            ? <button onClick={onLogOut}>log out</button>
             : <a href='https://login.salesforce.com/services/oauth2/authorize?response_type=token&client_id=3MVG9szVa2RxsqBYHAPh..zyh4EVbe.lQAkzoWqg8MoVL4ttsXhCu0YlLbISt_OAPP16XvT3v0e0tm.JMATvx
   &redirect_uri=https://dcpos.ch/yimby/contacts/'>log in</a>
         }
