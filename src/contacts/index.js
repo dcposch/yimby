@@ -27,7 +27,7 @@ export default class Contacts extends React.Component {
     const token = readOauthAccessToken()
     this.setState({token})
     if (!token) return
-    fetch(API_ROOT + '/sobjects/Contact/', {'Authorization': 'Oauth ' + token}, (err, data) => {
+    fetch(API_ROOT + '/sobjects/Contact/', {'Authorization': 'OAuth ' + token}, (err, data) => {
       // TODO: error handling
       if (err) return console.error(err)
       console.log(data)
@@ -95,7 +95,8 @@ export default class Contacts extends React.Component {
 
 function readOauthAccessToken () {
   const oauthParams = ['access_token']
-  document.location.hash.split('&').forEach((part) => {
+  var hash = document.location.hash.substring(1)
+  hash.split('&').forEach((part) => {
     const kv = part.split('=')
     const k = kv[0]
     const v = window.decodeURIComponent(kv[1])
