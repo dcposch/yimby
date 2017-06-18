@@ -51,7 +51,7 @@ const SCALES = {
   ]
 }
 
-var ZONE_COLORS = {
+const ZONE_COLORS = {
   // Residential
   'RH-1(D)': SCALES.RED[6],
   'RH-1': SCALES.RED[5],

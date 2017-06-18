@@ -1,6 +1,7 @@
 import React from 'react'
-import DeckGL from 'deck.gl/react'
+import DeckGL from 'deck.gl'
 import MapGL from 'react-map-gl'
+import PropTypes from 'prop-types'
 import config from './config'
 
 // Creates a map centered on San Francisco.
@@ -8,10 +9,10 @@ import config from './config'
 export default class Map extends React.Component {
   static get propTypes () {
     return {
-      layers: React.PropTypes.array.isRequired,
-      width: React.PropTypes.number,
-      height: React.PropTypes.number,
-      mapStyle: React.PropTypes.string
+      layers: PropTypes.array.isRequired,
+      width: PropTypes.number,
+      height: PropTypes.number,
+      mapStyle: PropTypes.string
     }
   }
 

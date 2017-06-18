@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-var fs = require('fs')
+const fs = require('fs')
 
-var rows = JSON.parse(fs.readFileSync('data/land-use.json', 'utf8'))
+const rows = JSON.parse(fs.readFileSync('data/land-use.json', 'utf8'))
   .filter(function (row) {
     return row.resunits > 0
   })
@@ -44,18 +44,18 @@ function print (rows) {
 
 function toString (r) {
   // Example: "1040 - 1044 FOLSOM ST."
-  var streetNumber = r.to_st ? (r.from_st + ' - ' + r.to_st) : r.from_st
-  var address = [streetNumber, r.street, r.st_type].filter(exists).join(' ') || 'ADDRESS MISSING'
-  var units = r.resunits + ' units'
-  var shapeArea = r.shape_area && (r.shape_area.toFixed(0) + ' lot sqft')
-  var bldgArea = r.bldgsqft && (r.bldgsqft.toFixed(0) + ' bldg sqft')
-  var arealDensity = r.areal_den && (r.areal_den.toFixed(2) + ' bldg / lot sqft')
-  var unitDensity = r.unit_den && ((1 / r.unit_den).toFixed(0) + ' lot sqft / unit')
+  const streetNumber = r.to_st ? (r.from_st + ' - ' + r.to_st) : r.from_st
+  const address = [streetNumber, r.street, r.st_type].filter(exists).join(' ') || 'ADDRESS MISSING'
+  const units = r.resunits + ' units'
+  const shapeArea = r.shape_area && (r.shape_area.toFixed(0) + ' lot sqft')
+  const bldgArea = r.bldgsqft && (r.bldgsqft.toFixed(0) + ' bldg sqft')
+  const arealDensity = r.areal_den && (r.areal_den.toFixed(2) + ' bldg / lot sqft')
+  const unitDensity = r.unit_den && ((1 / r.unit_den).toFixed(0) + ' lot sqft / unit')
 
-  var lotLine = r.landuse + ' ' + r.blklot + ' - ' + address
-  var statsLine = [units, shapeArea, bldgArea].filter(exists).join(', ')
-  var densityLine = [arealDensity, unitDensity].filter(exists).join(', ')
-  var lines = [lotLine, statsLine, densityLine]
+  const lotLine = r.landuse + ' ' + r.blklot + ' - ' + address
+  const statsLine = [units, shapeArea, bldgArea].filter(exists).join(', ')
+  const densityLine = [arealDensity, unitDensity].filter(exists).join(', ')
+  const lines = [lotLine, statsLine, densityLine]
 
   return ' - ' + lines.join('\n   ')
 }

@@ -15,8 +15,8 @@ export default class Contacts extends React.Component {
     this.state = {
       token: null,
       contacts: [],
-      select: -1,
-      hover: -1,
+      select: null,
+      hover: null,
       viewport: null
     }
   }
@@ -62,7 +62,6 @@ export default class Contacts extends React.Component {
 
   render () {
     const {token, contacts, select, viewport} = this.state
-    const person = contacts[select]
 
     return (
       <div>
@@ -71,7 +70,7 @@ export default class Contacts extends React.Component {
           viewport={viewport}
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
-        {person ? <ContactDetails person={person} /> : null}
+        {select ? <ContactDetails person={select} /> : null}
         <Controls isLoggedIn={!!token} contacts={contacts} />
       </div>
     )
@@ -84,29 +83,26 @@ export default class Contacts extends React.Component {
     return new ScatterplotLayer({
       data: contacts,
       opacity: 1,
-      radius: 1,
+      radiusScale: 1,
       pickable: true,
       getPosition: (contact) => {
         return [contact.address.longitude, contact.address.latitude]
       },
       getRadius: (row) => {
         const dotM = 2200 * Math.pow(0.7, zoom)
-
-        const i = row.index
-        return dotM * ((i === select) ? 2.3 : 2)
+        return dotM * ((row === select) ? 2.3 : 2)
       },
       getColor: (row) => {
-        const i = row.index
-        const opacity = (i === select || i === hover) ? 1 : 0.8
+        const opacity = (row === select || row === hover) ? 1 : 0.8
         const rgb = [0, 150, 0]
         return [rgb[0], rgb[1], rgb[2], Math.floor(255 * opacity)]
       },
       onHover: (info) => {
-        if (info.index === this.state.select) return
-        this.setState({hover: info.index})
+        if (info.object === this.state.select) return
+        this.setState({hover: info.object})
       },
       onClick: (info) => {
-        this.setState({select: info.index, hover: -1})
+        this.setState({select: info.object, hover: null})
       },
       updateTriggers: {
         all: {hover, select, zoom}
@@ -117,7 +113,7 @@ export default class Contacts extends React.Component {
 
 function readOauthAccessToken () {
   const oauthParams = ['access_token']
-  var hash = document.location.hash.substring(1)
+  const hash = document.location.hash.substring(1)
   hash.split('&').forEach((part) => {
     const kv = part.split('=')
     const k = kv[0]

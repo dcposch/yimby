@@ -104,7 +104,7 @@ export default class ZoningMap extends React.Component {
     else if (isSelect) alpha = 1.0
     if (zidFilter && zid !== zidFilter) alpha = 0
 
-    var color = zoneColors.rgb(zid)
+    const color = zoneColors.rgb(zid)
     const rgba = [].concat(color, [Math.round(alpha * 255)])
     return rgba
   }

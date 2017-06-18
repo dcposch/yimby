@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-var fs = require('fs')
-var zlib = require('zlib')
+const fs = require('fs')
+const zlib = require('zlib')
 
-var inputFileUse = 'data/land-use.json'
-var inputFileZoning = 'data/zoning.json'
-var outputFileLots = 'static/build/lots.json'
-var outputFileLotGeo = 'static/build/lot-geojson.json'
-var outputFileZoningGeo = 'static/build/zoning-geojson.json'
+const inputFileUse = 'data/land-use.json'
+const inputFileZoning = 'data/zoning.json'
+const outputFileLots = 'static/build/lots.json'
+const outputFileLotGeo = 'static/build/lot-geojson.json'
+const outputFileZoningGeo = 'static/build/zoning-geojson.json'
 
 console.log('reading input...', inputFileUse)
-var inputUse = JSON.parse(fs.readFileSync(inputFileUse, 'utf8'))
+const inputUse = JSON.parse(fs.readFileSync(inputFileUse, 'utf8'))
 console.log('reading input...', inputFileZoning)
-var inputZoning = JSON.parse(fs.readFileSync(inputFileZoning, 'utf8'))
+const inputZoning = JSON.parse(fs.readFileSync(inputFileZoning, 'utf8'))
 
 console.log('transforming...')
-var residentialLots = computeResLots(inputUse)
-var lotGeo = computeLotGeo(inputUse)
-var zoningGeo = computeZoningGeo(inputZoning)
+const residentialLots = computeResLots(inputUse)
+const lotGeo = computeLotGeo(inputUse)
+const zoningGeo = computeZoningGeo(inputZoning)
 
 write(outputFileLots, residentialLots)
 write(outputFileLotGeo, lotGeo)
@@ -42,17 +42,17 @@ function computeResLots (input) {
 // Returns a GeoJSON FeatureCollection object containing every lot in SF.
 // Feature properties include {units, area}
 function computeLotGeo (input) {
-  var n = 0
-  var sum = 0
-  var sumSquares = 0
-  var lotGeoFeatures = input
+  const n = 0
+  const sum = 0
+  const sumSquares = 0
+  const lotGeoFeatures = input
     .map(function (row) {
       // TODO: add zoning and height properties
-      var geom = {
+      const geom = {
         type: 'MultiPolygon',
         coordinates: row.the_geom.coordinates.map(function (poly) {
           if (poly.length > 1) console.log('poly has holes')
-          var hull = simplifyPoly(poly[0], 10)
+          const hull = simplifyPoly(poly[0], 10)
           n++
           sum += hull.length
           sumSquares += hull.length * hull.length
@@ -78,10 +78,10 @@ function computeLotGeo (input) {
 }
 
 function computeZoningGeo (input) {
-  var zones = {}
-  var features = input.map(function (row) {
-    var zone = zones[row.zoning]
-    var zoneInfo = {
+  const zones = {}
+  const features = input.map(function (row) {
+    const zone = zones[row.zoning]
+    const zoneInfo = {
       id: row.zoning,
       idSimple: row.zoning_sim,
       name: row.districtna,
@@ -113,16 +113,16 @@ function computeZoningGeo (input) {
 // already-chosen points until we have maxVerts points
 function simplifyPoly (poly, maxVerts) {
   if (poly.length <= maxVerts) return poly
-  var indices = [0]
-  for (var i = 1; i < maxVerts; i++) {
-    var maxMinDist = 0
-    var maxIndex = 0
-    for (var j = 0; j < poly.length; j++) {
-      var minDist = Infinity
-      for (var k = 0; k < indices.length; k++) {
-        var pj = poly[j]
-        var pk = poly[indices[k]]
-        var dist2 = (pj[0] - pk[0]) * (pj[0] - pk[0]) + (pj[1] - pk[1]) * (pj[1] - pk[1])
+  const indices = [0]
+  for (const i = 1; i < maxVerts; i++) {
+    const maxMinDist = 0
+    const maxIndex = 0
+    for (const j = 0; j < poly.length; j++) {
+      const minDist = Infinity
+      for (const k = 0; k < indices.length; k++) {
+        const pj = poly[j]
+        const pk = poly[indices[k]]
+        const dist2 = (pj[0] - pk[0]) * (pj[0] - pk[0]) + (pj[1] - pk[1]) * (pj[1] - pk[1])
         if (dist2 < minDist) minDist = dist2
       }
       if (minDist > maxMinDist) {
@@ -140,9 +140,9 @@ function simplifyPoly (poly, maxVerts) {
 // Computes the approximate centroid of a GeoJSON MultiPolygon
 function computeCenter (shape) {
   if (shape.type !== 'MultiPolygon') throw new Error('unsupported GeoJSON type ' + shape.type)
-  var slat = 0
-  var slon = 0
-  var n = 0
+  const slat = 0
+  const slon = 0
+  const n = 0
   shape.coordinates.forEach(function (poly) {
     poly[0].forEach(function (point) {
       n++
@@ -155,7 +155,7 @@ function computeCenter (shape) {
 
 // Writes a .json and a .json.gz
 function write (filename, obj) {
-  var json = JSON.stringify(obj)
+  const json = JSON.stringify(obj)
   console.log('writing %s...', filename)
   fs.writeFileSync(filename, json)
   console.log('writing %s...', filename + '.gz')
