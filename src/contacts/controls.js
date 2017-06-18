@@ -7,6 +7,7 @@ export default function Controls (props) {
     isLoggedIn,
     onLogOut,
     contacts,
+    filteredContacts,
     radius,
     radiusAddress,
     district,
@@ -67,7 +68,12 @@ export default function Controls (props) {
         {elemLogin}
       </p>
       <p>
-        loaded <strong>{contacts.length}</strong> contacts with valid addresses<br />
+        loaded <strong>{contacts.length}</strong> contacts with valid addresses
+      </p>
+      <p>
+        {filteredContacts.length === contacts.length
+          ? 'showing all contacts'
+          : ('filtered down to ' + filteredContacts.length + ' contacts')}
       </p>
 
       <h2>district</h2>

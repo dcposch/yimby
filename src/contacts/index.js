@@ -17,10 +17,12 @@ export default class Contacts extends React.Component {
     this.state = {
       token: null,
       contacts: [],
+      filteredContacts: [],
       select: null,
       hover: null,
       viewport: null,
       filter: {
+        district: null,
         radius: 100,
         radiusAddress: null
       }
@@ -29,14 +31,14 @@ export default class Contacts extends React.Component {
 
   componentWillMount () {
     this._readOauthAccessToken()
-    this._setStateFromLocalStorage()
-    if (this.state.token) {
-      this._fetchContacts()
+    const token = this._setTokenFromLocalStorage()
+    if (token) {
+      this._fetchContacts(token)
     }
   }
 
   render () {
-    const {token, contacts, select, viewport, filter} = this.state
+    const {token, contacts, filteredContacts, select, viewport, filter} = this.state
 
     return (
       <div>
@@ -50,6 +52,7 @@ export default class Contacts extends React.Component {
           isLoggedIn={!!token}
           onLogOut={() => this._handleLogOut()}
           contacts={contacts}
+          filteredContacts={filteredContacts}
           district={filter.district}
           radius={filter.radius}
           radiusAddress={filter.radiusAddress}
@@ -79,7 +82,7 @@ export default class Contacts extends React.Component {
       },
       getColor: (row) => {
         const opacity = (row === select || row === hover) ? 1 : 0.8
-        const rgb = [0, 150, 0]
+        const rgb = row.isFiltered ? [100, 100, 100] : [0, 150, 0]
         return [rgb[0], rgb[1], rgb[2], Math.floor(255 * opacity)]
       },
       onHover: (info) => {
@@ -90,20 +93,22 @@ export default class Contacts extends React.Component {
         this.setState({select: info.object, hover: null})
       },
       updateTriggers: {
-        all: {hover, select, zoom}
+        all: Object.assign({}, this.state.filter, {hover, select, zoom})
       }
     })
   }
 
-  _setStateFromLocalStorage () {
-    this.setState({token: window.localStorage.oauth_access_token})
+  _setTokenFromLocalStorage () {
+    const token = window.localStorage.oauth_access_token
+    this.setState({token})
+    return token
   }
 
-  _fetchContacts () {
+  _fetchContacts (token) {
     const url = API_ROOT + '/query?q=SELECT Name, Phone, Email, MailingAddress, ' +
       'Administrative_Area__c, State_Upper_District__c, State_Lower_District__c, ' +
       'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude != NULL'
-    const headers = {'Authorization': 'OAuth ' + this.state.token}
+    const headers = {'Authorization': 'OAuth ' + token}
     fetch(url, headers, (err, data) => {
       // TODO: error handling
       if (err) return console.error(err)
@@ -120,11 +125,12 @@ export default class Contacts extends React.Component {
           stateUpper: r.State_Upper_District__c
         },
         totalDonationsUSD: r.npo02__TotalOppAmount__c
-      })).filter(r => r.address.state === 'CA')
+      }))
 
       console.log('salesforce raw query response', data)
       console.log('salesforce contacts', contacts)
-      this.setState({contacts})
+
+      this._filterContacts(this.state.filter, contacts)
     })
 
     // For debugging
@@ -136,7 +142,7 @@ export default class Contacts extends React.Component {
 
   _handleLogOut () {
     window.localStorage.setItem('oauth_access_token', null)
-    this._setStateFromLocalStorage()
+    this._setTokenFromLocalStorage()
   }
 
   _handleChangeDistrict (district) {
@@ -198,16 +204,22 @@ export default class Contacts extends React.Component {
   _setFilter (filterDiff) {
     var oldFilter = this.state.filter
     var filter = Object.assign(oldFilter, filterDiff)
-    var filteredContacts = this.state.contacts.filter((contact) => {
+    this._filterContacts(filter, this.state.contacts)
+  }
+
+  _filterContacts (filter, contacts) {
+    var filteredContacts = contacts.filter((contact) => {
+      let ret = true
       if (filter.radiusAddress && filter.radiusAddress.success) {
         var dist = geo.computeDistance(contact.address, filter.radiusAddress.coordinates)
-        if (dist > filter.radius) return false
+        if (dist > filter.radius) ret = false
       }
       if (filter.district !== null) {
-        if (contact.districts.city !== filter.district) return false
+        if (contact.districts.city !== ('' + filter.district)) ret = false
       }
-      return true
+      contact.isFiltered = !ret
+      return ret
     })
-    this.setState({filter, filteredContacts})
+    this.setState({filter, contacts, filteredContacts})
   }
 }
