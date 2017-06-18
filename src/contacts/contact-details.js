@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function ContactDetails (props) {
-  const {name, address, email, phone, originList, totalDonation} = props.person
+  const {name, address, email, phone, districts, totalDonationsUSD} = props.person
 
   return (
     <div className='details'>
@@ -9,8 +9,8 @@ export default function ContactDetails (props) {
       { address ? <p><strong>{address}</strong></p> : null }
       { email ? <p><strong>{email}</strong></p> : null }
       { phone ? <p><strong>{phone}</strong></p> : null }
-      { originList ? <p>Origin list: <strong>{originList}</strong></p> : null }
-      { totalDonation ? <p>Total donation: <strong>${totalDonation.toFixed(2)}</strong></p> : null }
+      { districts ? <p><strong>{JSON.stringify(districts)}</strong></p> : null }
+      { totalDonationsUSD ? <p>Total donation: <strong>${totalDonationsUSD.toFixed(2)}</strong></p> : null }
     </div>
   )
 }

@@ -14,9 +14,7 @@ export default class Contacts extends React.Component {
 
     this.state = {
       token: null,
-      data: null,
-      numSucceeded: 0,
-      numFailed: 0,
+      contacts: [],
       select: -1,
       hover: -1,
       viewport: null
@@ -27,18 +25,42 @@ export default class Contacts extends React.Component {
     const token = readOauthAccessToken()
     this.setState({token})
     if (!token) return
-    fetch(API_ROOT + '/sobjects/Contact/', {'Authorization': 'OAuth ' + token}, (err, data) => {
+
+    const url = API_ROOT + '/query?q=SELECT Name, Phone, Email, MailingAddress, ' +
+      'Administrative_Area__c, State_Upper_District__c, State_Lower_District__c, ' +
+      'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude IS NOT NULL'
+    fetch(url, {'Authorization': 'OAuth ' + token}, (err, data) => {
       // TODO: error handling
       if (err) return console.error(err)
+
+      const contacts = data.records.map((r, i) => ({
+        index: i,
+        name: r.Name,
+        email: r.Email,
+        phone: r.Phone,
+        address: r.MailingAddress,
+        districts: {
+          city: r.Administrative_Area__c,
+          stateLower: r.State_Upper_District__c,
+          stateUpper: r.State_Upper_District__c
+        },
+        totalDonationsUSD: r.npo02__TotalOppAmount__c
+      })).filter(r => r.address.state === 'CA')
+
+      this.setState({contacts})
+    })
+
+    // For debugging
+    window.fetchSalesforce = (path) => fetch(API_ROOT + path, {'Authorization': 'OAuth ' + token}, (err, data) => {
+      if (err) return console.error(err)
       console.log(data)
-      // TODO: handle data
     })
   }
 
   render () {
-    const {token, data, select, viewport, numSucceeded, numFailed} = this.state
-    const numContacts = data ? data.length : 0
-    const person = data && data[select]
+    const {token, contacts, select, viewport} = this.state
+    const numContacts = contacts.length
+    const person = contacts[select]
 
     return (
       <div>
@@ -48,22 +70,22 @@ export default class Contacts extends React.Component {
           onChangeViewport={(v) => this.setState({viewport: v})}
         />
         {person ? <ContactDetails person={person} /> : null}
-        <Summary isLoggedIn={!!token} counts={{numContacts, numSucceeded, numFailed}} />
+        <Summary isLoggedIn={!!token} counts={{numContacts}} />
       </div>
     )
   }
 
   renderScatterplotLayer () {
-    const {data, hover, select, numSucceeded, numFailed, viewport} = this.state
+    const {contacts, hover, select, viewport} = this.state
     const zoom = viewport ? viewport.zoom : 12
 
     return new ScatterplotLayer({
-      data,
+      data: contacts,
       opacity: 1,
       radius: 1,
       pickable: true,
-      getPosition: (row) => {
-        return row.geo.center
+      getPosition: (contact) => {
+        return [contact.address.latitude, contact.address.longitude]
       },
       getRadius: (row) => {
         const dotM = 2200 * Math.pow(0.7, zoom)
@@ -74,9 +96,7 @@ export default class Contacts extends React.Component {
       getColor: (row) => {
         const i = row.index
         const opacity = (i === select || i === hover) ? 1 : 0.8
-        const rgb = (row.status === 'succeeded') ? [0, 150, 0]
-          : (row.status === 'failed') ? [180, 0, 0]
-          : [0, 255, 255]
+        const rgb = [0, 150, 0]
         return [rgb[0], rgb[1], rgb[2], Math.floor(255 * opacity)]
       },
       onHover: (info) => {
@@ -87,7 +107,7 @@ export default class Contacts extends React.Component {
         this.setState({select: info.index, hover: -1})
       },
       updateTriggers: {
-        all: {numSucceeded, numFailed, hover, select, zoom}
+        all: {hover, select, zoom}
       }
     })
   }
