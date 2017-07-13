@@ -9,7 +9,25 @@ legalize housing. https://dcpos.ch/yimby
 ## quick start
 
 ```
-./scripts/download.sh  # downloads data from SF Open Data
-npm install            # processes the data, runs browserify
-npm start              # runs a development server and watchify
+yarn && yarn start
+```
+
+## scripts
+
+### download sf open gov data
+
+```
+./scripts/download.sh
+```
+
+### build
+
+```
+yarn run build
+```
+
+### deploy
+
+```
+./scripts/deploy.sh
 ```
