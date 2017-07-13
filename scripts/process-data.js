@@ -42,9 +42,9 @@ function computeResLots (input) {
 // Returns a GeoJSON FeatureCollection object containing every lot in SF.
 // Feature properties include {units, area}
 function computeLotGeo (input) {
-  const n = 0
-  const sum = 0
-  const sumSquares = 0
+  let n = 0
+  let sum = 0
+  let sumSquares = 0
   const lotGeoFeatures = input
     .map(function (row) {
       // TODO: add zoning and height properties
@@ -114,12 +114,12 @@ function computeZoningGeo (input) {
 function simplifyPoly (poly, maxVerts) {
   if (poly.length <= maxVerts) return poly
   const indices = [0]
-  for (const i = 1; i < maxVerts; i++) {
-    const maxMinDist = 0
-    const maxIndex = 0
-    for (const j = 0; j < poly.length; j++) {
-      const minDist = Infinity
-      for (const k = 0; k < indices.length; k++) {
+  for (let i = 1; i < maxVerts; i++) {
+    let maxMinDist = 0
+    let maxIndex = 0
+    for (let j = 0; j < poly.length; j++) {
+      let minDist = Infinity
+      for (let k = 0; k < indices.length; k++) {
         const pj = poly[j]
         const pk = poly[indices[k]]
         const dist2 = (pj[0] - pk[0]) * (pj[0] - pk[0]) + (pj[1] - pk[1]) * (pj[1] - pk[1])
@@ -140,9 +140,9 @@ function simplifyPoly (poly, maxVerts) {
 // Computes the approximate centroid of a GeoJSON MultiPolygon
 function computeCenter (shape) {
   if (shape.type !== 'MultiPolygon') throw new Error('unsupported GeoJSON type ' + shape.type)
-  const slat = 0
-  const slon = 0
-  const n = 0
+  let slat = 0
+  let slon = 0
+  let n = 0
   shape.coordinates.forEach(function (poly) {
     poly[0].forEach(function (point) {
       n++

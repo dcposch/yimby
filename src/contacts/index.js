@@ -51,7 +51,7 @@ export default class Contacts extends React.Component {
         {select ? <ContactDetails person={select} /> : null}
         <Controls
           isLoggedIn={!!token}
-          onLogOut={() => this._handleLogOut()}
+          onLogOut={() => this._logOut()}
           contacts={contacts}
           filteredContacts={filteredContacts}
           filterExport={filterExport}
@@ -112,8 +112,10 @@ export default class Contacts extends React.Component {
       'npo02__TotalOppAmount__c FROM Contact WHERE MailingLatitude != NULL'
     const headers = {'Authorization': 'OAuth ' + token}
     fetch(url, headers, (err, data) => {
-      // TODO: error handling
-      if (err) return console.error(err)
+      if (err) {
+        console.log('Fetch failed', err)
+        return this._logOut()
+      }
 
       const contacts = data.records.map((r, i) => ({
         index: i,
@@ -142,8 +144,9 @@ export default class Contacts extends React.Component {
     })
   }
 
-  _handleLogOut () {
-    window.localStorage.setItem('oauth_access_token', null)
+  _logOut () {
+    console.log('Logging out')
+    window.localStorage.oauth_access_token = ''
     this._setTokenFromLocalStorage()
   }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import districts from './districts'
+// import districts from './districts.js'
 
 export default function Controls (props) {
   const {
