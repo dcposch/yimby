@@ -137,7 +137,7 @@ export default class Controls extends React.Component {
     let filterExport = formatContacts(filteredContacts, exportFormat)
     /* if (filteredContacts.length === contacts.length) {
       elemExportFormat = (
-        <span>filter down to fewer contacts to see export</span>
+        <span>filter contacts to export</span>
       )
       filterExport = null
     } else {
@@ -201,7 +201,7 @@ function formatContacts (contacts, format) {
   if (format === 'email') {
     return contacts
       .filter(c => !!c.email)
-      .map(c => c.name + '<' + c.email + '>')
+      .map(c => (c.name == null ? '' : c.name + ' ') + '<' + c.email + '>')
       .join(', ')
   }
 
@@ -209,11 +209,14 @@ function formatContacts (contacts, format) {
   return contacts
     .map(c =>
       [c.name, c.email, c.phone]
-        .map(val =>
-          val
-            .replace('\n', '')
-            .replace(delimiter, '')
-            .trim()
+        .map(
+          val =>
+            val == null
+              ? ''
+              : val
+                  .replace('\n', '')
+                  .replace(delimiter, '')
+                  .trim()
         )
         .join(delimiter)
     )
