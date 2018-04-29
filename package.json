@@ -7,15 +7,10 @@
   "license": "ISC",
   "repository": "https://github.com/dcposch/yimby",
   "dependencies": {
-    "babel-core": "^6.26.3",
-    "babel-polyfill": "^6.20.0",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "babel-preset-stage-2": "^6.18.0",
-    "babelify": "^8.0.0",
-    "browserify": "^16.2.0",
     "deck.gl": "^5.2.0",
     "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-config-standard-react": "^6.0.0",
     "eslint-plugin-import": "^2.3.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.5.0",
@@ -24,25 +19,18 @@
     "immutable": "^3.8.2",
     "luma.gl": "^5.2.0",
     "node-static": "^0.7.9",
+    "parcel-bundler": "^1.7.1",
     "prop-types": "^15.5.10",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-map-gl": "^3.2.7",
-    "standard": "^11.0.1",
-    "uglify-js": "^3.3.23",
-    "watchify": "^3.8.0"
+    "standard": "^11.0.1"
   },
   "scripts": {
     "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
-    "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
-    "watch": "watchify -t babelify src/app.js -o static/build/bundle.js -v",
-    "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
+    "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run build-js",
+    "build-js": "parcel build src/app.js -d static/build",
+    "watch": "parcel watch src/app.js -d static/build",
     "test": "standard"
-  },
-  "babel": {
-    "presets": [
-      "react",
-      "es2015"
-    ]
   }
 }
