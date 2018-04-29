@@ -120,6 +120,24 @@ export default class Controls extends React.Component {
               onClick={() => onChangeRadius(10000)}
             >
               10km
+            </span>{' '}
+            <span
+              className={r === 20000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(20000)}
+            >
+              20km
+            </span>{' '}
+            <span
+              className={r === 50000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(50000)}
+            >
+              50km
+            </span>{' '}
+            <span
+              className={r === 100000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(100000)}
+            >
+              100km
             </span>
           </p>
           <p>click above to filter.</p>

@@ -31,7 +31,7 @@
     "babelify": "^7.3.0",
     "browserify": "^13.3.0",
     "node-static": "^0.7.9",
-    "standard": "^8.6.0",
+    "standard": "*",
     "uglify-js": "^2.7.5",
     "watchify": "^3.8.0"
   },
