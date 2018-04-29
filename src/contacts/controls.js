@@ -102,6 +102,24 @@ export default class Controls extends React.Component {
               onClick={() => onChangeRadius(1000)}
             >
               1km
+            </span>{' '}
+            <span
+              className={r === 2000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(2000)}
+            >
+              2km
+            </span>{' '}
+            <span
+              className={r === 5000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(5000)}
+            >
+              5km
+            </span>{' '}
+            <span
+              className={r === 10000 ? 'selected' : ''}
+              onClick={() => onChangeRadius(10000)}
+            >
+              10km
             </span>
           </p>
           <p>click above to filter.</p>
@@ -214,9 +232,9 @@ function formatContacts (contacts, format) {
             val == null
               ? ''
               : val
-                  .replace('\n', '')
-                  .replace(delimiter, '')
-                  .trim()
+                .replace('\n', '')
+                .replace(delimiter, '')
+                .trim()
         )
         .join(delimiter)
     )
