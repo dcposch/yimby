@@ -3,10 +3,19 @@
   <head>
     <title>YIMBY contacts</title>
     <link rel='stylesheet' href='style.css'>
+    <link rel='stylesheet' href='../build/mapbox-gl.css'>
     <link rel='shortcut icon' href='../favicon.ico'>
   <head>
   <body>
     <div id='container'></div>
+    <script>
+// Babel bug workaround: https://github.com/babel/babel/issues/4125
+window._typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+</script>
     <script src='../build/app.js'></script>
   </body>
 </html>

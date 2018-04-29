@@ -214,9 +214,9 @@ function formatContacts (contacts, format) {
             val == null
               ? ''
               : val
-                  .replace('\n', '')
-                  .replace(delimiter, '')
-                  .trim()
+                .replace('\n', '')
+                .replace(delimiter, '')
+                .trim()
         )
         .join(delimiter)
     )

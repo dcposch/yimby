@@ -8,6 +8,7 @@ import Contacts from './contacts'
 main()
 
 function main () {
+  console.log('Hello world')
   let path = document.location.pathname
   // Hack to make these pages work when served from dcpos.ch/yimby/
   if (path.startsWith('/yimby')) {

@@ -24,13 +24,16 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-map-gl": "^3.2.7",
+    "regenerator-runtime": "^0.11.1",
     "standard": "^11.0.1"
   },
   "scripts": {
-    "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
+    "start": "npm run test && npm run watch & npm run serve",
+    "serve": "cd static && static -z --cache false .",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run build-js",
-    "build-js": "parcel build src/app.js -d static/build",
-    "watch": "parcel watch src/app.js -d static/build",
+    "copy-js": "cp node_modules/mapbox-gl/dist/mapbox-gl.css static/build/",
+    "build-js": "npm run copy-js && parcel build src/app.js -d static/build",
+    "watch": "npm run copy-js && parcel watch src/app.js -d static/build",
     "test": "standard"
   }
 }
