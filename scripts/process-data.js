@@ -79,14 +79,15 @@ function computeLotGeo (input) {
 
 function computeZoningGeo (input) {
   const zones = {}
-  const features = input.map(function (row) {
-    const zone = zones[row.zoning]
+  const features = input.features.map(function (f) {
+    const row = f.properties
     const zoneInfo = {
       id: row.zoning,
       idSimple: row.zoning_sim,
-      name: row.districtna,
+      name: row.districtname,
       legalURL: row.url
     }
+    const zone = zones[row.zoning]
     if (!zone) {
       zones[row.zoning] = zoneInfo
     } else if (JSON.stringify(zone) !== JSON.stringify(zoneInfo)) {
@@ -95,7 +96,7 @@ function computeZoningGeo (input) {
 
     return {
       type: 'Feature',
-      geometry: row.geometry,
+      geometry: f.geometry,
       properties: zoneInfo
     }
   })

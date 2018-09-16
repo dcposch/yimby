@@ -1,7 +1,7 @@
 // Usage:
 // zoneColors.rgb('RH-1') returns something like [200, 50, 50]
 // zoneColors.html('RH-1') returns something like '#aa2222'
-export default {rgb, html}
+export default { rgb, html }
 
 const SCALES = {
   GREEN: [
@@ -48,6 +48,11 @@ const SCALES = {
     [106, 81, 163],
     [84, 39, 143],
     [63, 0, 12]
+  ],
+  GRAY: [
+    [220, 220, 220],
+    [180, 180, 180],
+    [140, 140, 140]
   ]
 }
 
@@ -132,11 +137,14 @@ const ZONE_COLORS = {
 
   // ... Mission Bay
   'MB-O': SCALES.PURPLE[4],
-  'MB-OS': SCALES.PURPLE[3],
+  'MB-OS': SCALES.GRAY[1],
   'MB-RA': SCALES.PURPLE[4],
 
+  // Mission Rock
+  'MR-MU': SCALES.PURPLE[3],
+
   // ... Park Merced
-  'PM-OS': SCALES.PURPLE[3],
+  'PM-OS': SCALES.GRAY[1],
   'PM-S': SCALES.PURPLE[3],
   'PM-CF': SCALES.PURPLE[3],
   'PM-MU1': SCALES.PURPLE[4],
@@ -144,7 +152,22 @@ const ZONE_COLORS = {
   'PM-R': SCALES.PURPLE[5],
 
   // ... South Park
-  'SPD': SCALES.PURPLE[4]
+  'SPD': SCALES.PURPLE[4],
+
+  // ... Treasure Island
+  'TI-PCI': SCALES.PURPLE[3],
+  'TI-R': SCALES.PURPLE[4],
+  'TI-MU': SCALES.PURPLE[5],
+  'TI-OS': SCALES.GRAY[1],
+
+  // Yerba Buena Island
+  'YBI-R': SCALES.PURPLE[4],
+  'YBI-OS': SCALES.GRAY[1],
+  'YBI-MU': SCALES.PURPLE[3],
+  'YBI-PCI': SCALES.PURPLE[3],
+
+  // Bad data
+  'Job Corps': SCALES.PURPLE[3]
 
   // Public (not shown)
   // 'P': null

@@ -1,5 +1,5 @@
 import React from 'react'
-import {ChoroplethLayer} from 'deck.gl'
+import { GeoJsonLayer } from 'deck.gl'
 
 import fetch from '../fetch'
 import Map from '../map'
@@ -14,12 +14,16 @@ export default class ZoningMap extends React.Component {
       data: null,
       select: -1,
       hover: -1,
-      viewport: null,
       filteredZoneSimpleID: null
     }
+
+    this._onKeyDownBound = this._onKeyDown.bind(this)
+    this._onFilterZoneBound = this._onFilterZone.bind(this)
+    this._onLayerClickBound = this._onLayerClick.bind(this)
+    this._onLayerHoverBound = this._onLayerHover.bind(this)
   }
 
-  componentWillMount () {
+  componentDidMount () {
     fetch('../build/zoning-geojson.json', (err, data) => {
       if (err) return console.error(err)
       // Don't show public land like parks and highways.
@@ -27,12 +31,18 @@ export default class ZoningMap extends React.Component {
       // simplify / re-use / browser-cache the data sets we're loading.
       // I might want to show public lots in a different visualization.
       data.features = data.features.filter((f) => f.properties.idSimple !== 'P')
-      this.setState({data})
+      this.setState({ data })
     })
+
+    window.addEventListener('keydown', this._onKeyDownBound)
+  }
+
+  componentWillUnmount () {
+    window.removeEventListener('keydown', this._onKeyDownBound)
   }
 
   render () {
-    const {data, viewport, select, filteredZoneSimpleID} = this.state
+    const { data, viewport, select, filteredZoneSimpleID } = this.state
 
     const layers = []
     if (data) {
@@ -49,11 +59,13 @@ export default class ZoningMap extends React.Component {
         <Map
           layers={layers}
           viewport={viewport}
-          onChangeViewport={(v) => this.setState({viewport: v})}
+          onViewportChange={this._onChangeViewportBound}
+          onLayerClick={this._onLayerClickBound}
+          onLayerHover={this._onLayerHoverBound}
         />
         <ZoningDescription
           selectedZone={filteredZoneSimpleID}
-          onSelectZone={(id) => this.onFilterZone(id)}
+          onSelectZone={this._onFilterZoneBound}
         />
         {details}
       </div>
@@ -61,42 +73,28 @@ export default class ZoningMap extends React.Component {
   }
 
   renderZoningLayer () {
-    const {data, hover, select, filteredZoneSimpleID} = this.state
+    const { data, hover, select, filteredZoneSimpleID } = this.state
 
-    return new ChoroplethLayer({
+    return new GeoJsonLayer({
       data,
       pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: false,
 
-      getColor: (f) => {
+      getFillColor: (f) => {
         const props = f.properties
-        return this.getZoneColor(props, props.index === hover, props.index === select)
-      },
-
-      onHover: (info) => {
-        if (info.index > 0 && info.index === select) return // already selected
-        if (info.index === hover) return // already hovered
-        this.setState({hover: info.index})
-      },
-
-      onClick: (info) => {
-        if (info.index === select) return // already selected
-        if (filteredZoneSimpleID !== null) {
-          // if we've filtered to some zone id, and we click somewhere else on the map, unfilter
-          const feature = data.features[info.index]
-          if (!feature || feature.properties.idSimple !== filteredZoneSimpleID) {
-            return this.setState({hover: info.index, select: -1, filteredZoneSimpleID: null})
-          }
-        }
-        this.setState({hover: -1, select: info.index})
+        return this._getZoneColor(props, props.index === hover, props.index === select)
+        // return [160, 160, 180, 200]
       },
 
       updateTriggers: {
-        colors: {hover, select, filteredZoneSimpleID}
+        getFillColor: { hover, select, filteredZoneSimpleID }
       }
     })
   }
 
-  getZoneColor (zoneProps, isHover, isSelect) {
+  _getZoneColor (zoneProps, isHover, isSelect) {
     const zid = zoneProps.idSimple
     const zidFilter = this.state.filteredZoneSimpleID
 
@@ -110,16 +108,50 @@ export default class ZoningMap extends React.Component {
     return rgba
   }
 
+  _onLayerHover (info) {
+    if (info == null) return
+    const { select, hover } = this.state
+    if (info.index > 0 && info.index === select) return // already selected
+    if (info.index === hover) return // already hovered
+    this.setState({ hover: info.index })
+  }
+
+  _onLayerClick (info) {
+    const { data, select, filteredZoneSimpleID } = this.state
+    if (info == null) {
+      // clicked on an empty area of the map. deselect:
+      return this.setState({ hover: -1, select: -1, filteredZoneSimpleID: null })
+    }
+    if (info.index === select) return // already selected
+    if (filteredZoneSimpleID !== null) {
+      // if we've filtered to some zone id, and we click somewhere else on the map, unfilter
+      const feature = data.features[info.index]
+      if (!feature || feature.properties.idSimple !== filteredZoneSimpleID) {
+        return this.setState({ hover: info.index, select: -1, filteredZoneSimpleID: null })
+      }
+    }
+    this.setState({ hover: -1, select: info.index })
+  }
+
+  _onKeyDown (ev) {
+    if (ev.key === 'Escape') {
+      this.setState({
+        select: -1,
+        filteredZoneSimpleID: null
+      })
+    }
+  }
+
   // Let the user filter down to a simplified zone ID, to see everywhere it's used.
   // Toggle. If the user clicks the same filter again, turn off filtering.
-  onFilterZone (id) {
-    const {data, select, filteredZoneSimpleID} = this.state
+  _onFilterZone (id) {
+    const { data, select, filteredZoneSimpleID } = this.state
 
     if (filteredZoneSimpleID === id) id = null
     if (id !== null && select > 0) {
       const zone = data.features[select].properties
-      if (zone.idSimple !== id) this.setState({select: -1})
+      if (zone.idSimple !== id) this.setState({ select: -1 })
     }
-    this.setState({filteredZoneSimpleID: id})
+    this.setState({ filteredZoneSimpleID: id })
   }
 }

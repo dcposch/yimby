@@ -3,7 +3,7 @@ import React from 'react'
 import zoneColors from './zone-colors'
 
 export default function ZoningDescription (props) {
-  const {selectedZone, onSelectZone} = props
+  const { selectedZone, onSelectZone } = props
 
   function renderLegend (ids) {
     const items = []
@@ -11,7 +11,7 @@ export default function ZoningDescription (props) {
       items.push(
         <span
           className={id === selectedZone ? 'selected' : ''}
-          style={{borderTopColor: zoneColors.html(id)}}
+          style={{ borderTopColor: zoneColors.html(id) }}
           onClick={() => onSelectZone(id)}
           key={id}
           title={id}
@@ -40,6 +40,12 @@ export default function ZoningDescription (props) {
         <strong>
           want a more inclusive, urban city to call home?{' '}
           <a href='//yimbyaction.org/join'>join yimby action</a>!
+        </strong>
+      </p>
+      <p>
+        <strong>
+          help sonja win! donate / phonebank / vote / w/e:{' '}
+          <a href='https://www.sonja2018.org/'>sonja 2018</a>
         </strong>
       </p>
 
@@ -103,8 +109,10 @@ export default function ZoningDescription (props) {
 
       <h2>special zones</h2>
       {renderLegend(['CCB', 'CRNC', 'CVR'])}
-      {renderLegend(['MB-O', 'MB-OS', 'MB-RA', 'SPD', 'HP-RA'])}
-      {renderLegend(['PM-OS', 'PM-S', 'PM-CF', 'PM-MU1', 'PM-MU2', 'PM-R'])}
+      {renderLegend(['MB-O', 'MB-RA', 'SPD', 'HP-RA', 'MR-MU'])}
+      {renderLegend(['PM-S', 'PM-CF', 'PM-MU1', 'PM-MU2', 'PM-R'])}
+      {renderLegend(['TI-PCI', 'TI-MU', 'TI-R'])}
+      {renderLegend(['YBI-PCI', 'YBI-MU', 'YBI-R'])}
       <p>
         some places, like Chinatown, Mission Bay, South Park, Hunters Point, and Park Merced, get
         their own special zoning. the rules vary, but for the most part these areas are good.

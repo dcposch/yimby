@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function ContactDetails (props) {
-  const {name, address, email, phone, districts, totalDonationsUSD} = props.person
+  const { name, address, email, phone, districts, totalDonationsUSD } = props.person
 
   const addressStr = [address.street, address.city, address.stateCode, address.postalCode].join(' ')
   let districtStr = null

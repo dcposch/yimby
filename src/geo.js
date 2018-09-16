@@ -1,4 +1,4 @@
-export default {computeDistance}
+export default { computeDistance }
 
 // Computes an approximate distance, in meters, between two coordinate pairs
 // Expects both a and b to contain {latitude, longitude}

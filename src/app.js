@@ -1,7 +1,7 @@
-import 'babel-polyfill'
+import '@babel/polyfill'
 
 import React from 'react'
-import {render} from 'react-dom'
+import { render } from 'react-dom'
 import Zoning from './zoning'
 import Contacts from './contacts'
 

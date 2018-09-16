@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function ZoneDetails (props) {
-  const {id, idSimple, name, legalURL} = props.zone
+  const { id, idSimple, name, legalURL } = props.zone
   const simple = id === idSimple ? null : (
     <p>
       simplified ID: <strong>{idSimple}</strong>

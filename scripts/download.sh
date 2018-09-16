@@ -12,8 +12,9 @@ mkdir -p $DIR
 # SODA API JSON:
 wget 'https://data.sfgov.org/resource/a2rp-pwkh.json?$limit=1000000' -O $DIR/land-use.json
 wget 'https://data.sfgov.org/resource/45et-ht7c.json?$limit=1000000' -O $DIR/city-lots.json
-wget 'https://data.sfgov.org/resource/8br2-hhp3.json?$limit=1000000' -O $DIR/zoning.json
-wget 'https://data.sfgov.org/resource/487i-vkgi.json?$limit=1000000' -O $DIR/supervisors.json
+# Broken: wget 'https://data.sfgov.org/resource/8br2-hhp3.json?$limit=1000000' -O $DIR/zoning.json
+wget 'https://data.sfgov.org/api/geospatial/xvjh-uu28?method=export&format=GeoJSON' -O $DIR/zoning.json
+# Broken: wget 'https://data.sfgov.org/resource/487i-vkgi.json?$limit=1000000' -O $DIR/supervisors.json
 
 wget 'https://data.sfgov.org/api/views/sr5d-tnui/rows.csv' -O $DIR/addresses.csv
 

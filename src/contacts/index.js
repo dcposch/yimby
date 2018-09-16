@@ -162,7 +162,7 @@ export default class Contacts extends React.Component {
         <Map
           layers={[this._renderScatterplotLayer()]}
           viewport={viewport}
-          onChangeViewport={v => this.setState({ viewport: v })}
+          onViewportChange={v => this.setState({ viewport: v })}
         />
         {select ? <ContactDetails person={select} /> : null}
         <Controls

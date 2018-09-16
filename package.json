@@ -7,16 +7,7 @@
   "license": "ISC",
   "repository": "https://github.com/dcposch/yimby",
   "dependencies": {
-    "babel-polyfill": "^6.20.0",
     "deck.gl": "^6.1.0",
-    "eslint": "^5.6.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-config-standard-react": "^7.0.2",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^7.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-react": "^7.11.1",
-    "eslint-plugin-standard": "^4.0.0",
     "immutable": "^3.8.2",
     "luma.gl": "^6.1.0",
     "prop-types": "^15.6.2",
@@ -25,11 +16,21 @@
     "react-map-gl": "^3.3.4"
   },
   "devDependencies": {
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.16.0",
-    "babel-preset-stage-2": "^6.18.0",
+    "@babel/core": "^7.0.1",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
     "babelify": "^10.0.0",
     "browserify": "^16.2.2",
+    "eslint": "^5.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-config-standard-react": "^7.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "mkdirp": "^0.5.1",
     "node-static": "^0.7.9",
     "standard": "*",
     "uglify-js": "^3.4.9",
@@ -38,14 +39,14 @@
   "scripts": {
     "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
     "build": "rm -rf static/build && mkdir static/build && ./scripts/process-data.js && npm run browserify",
-    "watch": "watchify -t babelify src/app.js -o static/build/bundle.js -v",
+    "watch": "mkdirp static/build && watchify -t babelify src/app.js -o static/build/bundle.js -v",
     "browserify": "NODE_ENV=production browserify -t babelify src/app.js | uglifyjs -c -m > static/build/bundle.js",
     "test": "standard"
   },
   "babel": {
     "presets": [
-      "react",
-      "env"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ]
   }
 }

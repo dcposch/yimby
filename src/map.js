@@ -1,6 +1,6 @@
 import React from 'react'
 import DeckGL from 'deck.gl'
-import MapGL from 'react-map-gl'
+import { StaticMap } from 'react-map-gl'
 import PropTypes from 'prop-types'
 import config from './config'
 
@@ -12,7 +12,9 @@ export default class Map extends React.Component {
       layers: PropTypes.array.isRequired,
       width: PropTypes.number,
       height: PropTypes.number,
-      mapStyle: PropTypes.string
+      mapStyle: PropTypes.string,
+      onLayerClick: PropTypes.func,
+      onLayerHover: PropTypes.func
     }
   }
 
@@ -22,8 +24,6 @@ export default class Map extends React.Component {
   }
 
   render () {
-    const {layers, onChangeViewport} = this.props
-
     const viewport = this.props.viewport || {
       latitude: 37.78,
       longitude: -122.44,
@@ -32,10 +32,6 @@ export default class Map extends React.Component {
       pitch: 0
     }
 
-    // Default to full-screen
-    const width = this.props.width || window.innerWidth
-    const height = this.props.height || window.innerHeight
-
     // Alternate mapStyles:
     // - Light: mapbox://styles/mapbox/light-v9
     // - Dark: mapbox://styles/mapbox/dark-v9
@@ -43,22 +39,20 @@ export default class Map extends React.Component {
     const mapStyle = this.props.mapStyle || 'mapbox://styles/mapbox/light-v9'
 
     return (
-      <MapGL
-        {...viewport}
-        mapStyle={mapStyle}
-        onChangeViewport={(v) => onChangeViewport(v)}
-        preventStyleDiffing={false}
-        mapboxApiAccessToken={config.MAPBOX_TOKEN}
-        perspectiveEnabled
-        width={width}
-        height={height}>
-        <DeckGL
-          {...viewport}
-          width={width}
-          height={height}
-          layers={layers}
-          debug />
-      </MapGL>
+      <DeckGL
+        initialViewState={viewport}
+        layers={this.props.layers}
+        onLayerClick={this.props.onLayerClick}
+        onLayerHover={this.props.onLayerHover}
+        controller
+      >
+        <StaticMap
+          reuseMaps
+          mapStyle={mapStyle}
+          preventStyleDiffing
+          mapboxApiAccessToken={config.MAPBOX_TOKEN}
+        />
+      </DeckGL>
     )
   }
 }
