@@ -9,7 +9,7 @@ legalize housing. https://dcpos.ch/yimby
 ## quick start
 
 ```
-yarn && yarn start
+npm install && npm start
 ```
 
 ## scripts
@@ -23,7 +23,7 @@ yarn && yarn start
 ### build
 
 ```
-yarn run build
+npm run build
 ```
 
 ### deploy
