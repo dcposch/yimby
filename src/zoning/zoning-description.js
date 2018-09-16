@@ -111,8 +111,7 @@ export default function ZoningDescription (props) {
       {renderLegend(['CCB', 'CRNC', 'CVR'])}
       {renderLegend(['MB-O', 'MB-RA', 'SPD', 'HP-RA', 'MR-MU'])}
       {renderLegend(['PM-S', 'PM-CF', 'PM-MU1', 'PM-MU2', 'PM-R'])}
-      {renderLegend(['TI-PCI', 'TI-MU', 'TI-R'])}
-      {renderLegend(['YBI-PCI', 'YBI-MU', 'YBI-R'])}
+      {renderLegend(['TI-PCI', 'TI-MU', 'TI-R', 'YBI-PCI', 'YBI-MU', 'YBI-R'])}
       <p>
         some places, like Chinatown, Mission Bay, South Park, Hunters Point, and Park Merced, get
         their own special zoning. the rules vary, but for the most part these areas are good.
