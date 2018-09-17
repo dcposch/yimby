@@ -44,7 +44,7 @@ export default function ZoningDescription (props) {
       </p>
       <p>
         <strong>
-          help sonja win! donate / phonebank / vote / w/e:{' '}
+          help sonja win! donate / phonebank / vote / etc:{' '}
           <a href='https://www.sonja2018.org/'>sonja 2018</a>
         </strong>
       </p>
