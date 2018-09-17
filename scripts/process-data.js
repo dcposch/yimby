@@ -2,11 +2,11 @@
 const fs = require('fs')
 const zlib = require('zlib')
 
-const inputFileUse = 'data/land-use.json'
-const inputFileZoning = 'data/zoning.json'
-const outputFileLots = 'static/build/lots.json'
-const outputFileLotGeo = 'static/build/lot-geojson.json'
-const outputFileZoningGeo = 'static/build/zoning-geojson.json'
+const inputFileUse = 'download/land-use.json'
+const inputFileZoning = 'download/zoning.json'
+const outputFileLots = 'static/data/lots.json'
+const outputFileLotGeo = 'static/data/lot-geojson.json'
+const outputFileZoningGeo = 'static/data/zoning-geojson.json'
 
 console.log('reading input...', inputFileUse)
 const inputUse = JSON.parse(fs.readFileSync(inputFileUse, 'utf8'))

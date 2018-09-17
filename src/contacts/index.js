@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScatterplotLayer } from 'deck.gl'
+import { ScatterplotLayer, GeoJsonLayer } from 'deck.gl'
 
 import config from '../config'
 import fetch from '../fetch'
@@ -125,14 +125,21 @@ export default class Contacts extends React.Component {
       token: null,
       contacts: [],
       filteredContacts: [],
+
       select: null,
       hover: null,
       viewport: null,
+
       filter: {
         district: null,
         radius: 100,
         radiusAddress: null
-      }
+      },
+
+      geoCities: null,
+      geoSDs: null,
+      geoADs: null,
+      geoCounties: null
     }
   }
 
@@ -145,6 +152,26 @@ export default class Contacts extends React.Component {
       // local testing
       this._handleSalesforceContacts(API_SAMPLE_RESPONSE)
     }
+
+    fetch('../data/BayAreaPlaces.json', (err, data) => {
+      if (err) return console.error(err)
+      this.setState({ geoCities: data })
+    })
+
+    fetch('../data/ca-counties-tiger2016-simple.json', (err, data) => {
+      if (err) return console.error(err)
+      this.setState({ geoCounties: data })
+    })
+
+    fetch('../data/cb_2017_06_sldu_500k.geojson', (err, data) => {
+      if (err) return console.error(err)
+      this.setState({ geoADs: data })
+    })
+
+    fetch('../data/cb_2017_06_sldu_500k.geojson', (err, data) => {
+      if (err) return console.error(err)
+      this.setState({ geoSDs: data })
+    })
   }
 
   render () {
@@ -156,11 +183,16 @@ export default class Contacts extends React.Component {
       viewport,
       filter
     } = this.state
+    
+    const layers = [this._renderScatterplotLayer()]
+
+    // TODO
+    layers.unshift(this._renderBoundariesLayer())
 
     return (
       <div>
         <Map
-          layers={[this._renderScatterplotLayer()]}
+          layers={layers}
           viewport={viewport}
           onViewportChange={v => this.setState({ viewport: v })}
         />
@@ -179,6 +211,23 @@ export default class Contacts extends React.Component {
         />
       </div>
     )
+  }
+
+  _renderBoundariesLayer () {
+    return new GeoJsonLayer({
+      data: this.state.geoCities,
+      
+      pickable: true,
+      stroked: false,
+      filled: true,
+      extruded: false,
+
+      getFillColor: [200, 0, 0, 150],
+
+      updateTriggers: {
+        getFillColor: { hover, select, filteredZoneSimpleID }
+      }
+    })
   }
 
   _renderScatterplotLayer () {
@@ -337,7 +386,7 @@ export default class Contacts extends React.Component {
     const url =
       'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
       window.encodeURIComponent(address) +
-      '.json?access_token=' +
+      '.json?proximity=-122.4194,37.7749&access_token=' +
       config.MAPBOX_TOKEN
     fetch(url, (err, data) => {
       if (err) console.error(err)

@@ -4,7 +4,7 @@
 
 set -e
 
-DIR=`dirname "${BASH_SOURCE[0]}"`/../data
+DIR=`dirname "${BASH_SOURCE[0]}"`/../download
 
 rm -rf $DIR
 mkdir -p $DIR

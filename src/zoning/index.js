@@ -24,7 +24,7 @@ export default class ZoningMap extends React.Component {
   }
 
   componentDidMount () {
-    fetch('../build/zoning-geojson.json', (err, data) => {
+    fetch('../data/zoning-geojson.json', (err, data) => {
       if (err) return console.error(err)
       // Don't show public land like parks and highways.
       // Filter it out here, not during data preprocessing, so that we can
@@ -50,10 +50,6 @@ export default class ZoningMap extends React.Component {
       layers.push(this.renderZoningLayer())
     }
 
-    const details = select >= 0
-      ? <ZoneDetails zone={data.features[select].properties} />
-      : null
-
     return (
       <div>
         <Map
@@ -67,7 +63,7 @@ export default class ZoningMap extends React.Component {
           selectedZone={filteredZoneSimpleID}
           onSelectZone={this._onFilterZoneBound}
         />
-        {details}
+        {select < 0 ? null : <ZoneDetails zone={data.features[select].properties} />}
       </div>
     )
   }
@@ -77,6 +73,7 @@ export default class ZoningMap extends React.Component {
 
     return new GeoJsonLayer({
       data,
+
       pickable: true,
       stroked: false,
       filled: true,

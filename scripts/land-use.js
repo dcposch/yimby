@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 
-const rows = JSON.parse(fs.readFileSync('data/land-use.json', 'utf8'))
+const rows = JSON.parse(fs.readFileSync('download/land-use.json', 'utf8'))
   .filter(function (row) {
     return row.resunits > 0
   })
