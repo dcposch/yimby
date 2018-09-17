@@ -3,10 +3,12 @@ import React from 'react'
 export default function ContactDetails (props) {
   const { name, address, email, phone, districts, totalDonationsUSD } = props.person
 
-  const addressStr = [address.street, address.city, address.stateCode, address.postalCode].join(' ')
+  const state = address.stateCode || address.state
+
+  const addressStr = [address.street, address.city, state, address.postalCode].join(' ')
   let districtStr = null
-  if (address.stateCode === 'CA' && districts) {
-    districtStr = 'California SD ' + districts.stateUpper + ', AD ' + districts.stateLower
+  if (state === 'CA' && districts) {
+    districtStr = 'California SD ' + districts.sd + ', AD ' + districts.ad
     if (address.city === 'San Francisco') {
       districtStr += ', SF D' + districts.city
     }

@@ -130,8 +130,9 @@ export default class Contacts extends React.Component {
       hover: null,
       viewport: null,
 
+      hoverGeo: null,
       filter: {
-        district: null,
+        geo: null,
         radius: 100,
         radiusAddress: null
       },
@@ -158,12 +159,12 @@ export default class Contacts extends React.Component {
       this.setState({ geoCities: data })
     })
 
-    fetch('../data/ca-counties-tiger2016-simple.json', (err, data) => {
-      if (err) return console.error(err)
-      this.setState({ geoCounties: data })
-    })
+    // fetch('../data/ca-counties-tiger2016-simple.json', (err, data) => {
+    //   if (err) return console.error(err)
+    //   this.setState({ geoCounties: data })
+    // })
 
-    fetch('../data/cb_2017_06_sldu_500k.geojson', (err, data) => {
+    fetch('../data/cb_2017_06_sldl_500k.geojson', (err, data) => {
       if (err) return console.error(err)
       this.setState({ geoADs: data })
     })
@@ -181,13 +182,14 @@ export default class Contacts extends React.Component {
       filteredContacts,
       select,
       viewport,
-      filter
+      filter,
+      hoverGeo
     } = this.state
-    
-    const layers = [this._renderScatterplotLayer()]
 
-    // TODO
-    layers.unshift(this._renderBoundariesLayer())
+    const layers = []
+    const geoLayer = this._renderGeoLayer()
+    if (geoLayer) layers.push(geoLayer)
+    layers.push(this._renderScatterplotLayer())
 
     return (
       <div>
@@ -202,10 +204,11 @@ export default class Contacts extends React.Component {
           onLogOut={() => this._logOut()}
           contacts={contacts}
           filteredContacts={filteredContacts}
-          district={filter.district}
+          hoverGeo={hoverGeo}
+          geo={filter.geo}
           radius={filter.radius}
           radiusAddress={filter.radiusAddress}
-          onChangeDistrict={district => this._handleChangeDistrict(district)}
+          onChangeGeo={(geo, hover) => this._handleChangeGeo(geo, hover)}
           onChangeRadius={radius => this._handleChangeRadius(radius)}
           onChangeRadiusAddress={addr => this._handleChangeRadiusAddress(addr)}
         />
@@ -213,21 +216,67 @@ export default class Contacts extends React.Component {
     )
   }
 
-  _renderBoundariesLayer () {
+  _renderGeoLayer () {
+    const { filter, hoverGeo } = this.state
+    const { geo } = filter
+
+    const g = geo || hoverGeo
+    if (!g) return null
+
+    let data
+    const gType = g.split('-')[0] // eg 'district' or 'ad'
+    if (gType === 'ad') {
+      data = this.state.geoADs
+    } else if (gType === 'sd') {
+      data = this.state.geoSDs
+    } else if (gType === 'city') {
+      data = this.state.geoCities
+    }
+    if (!data) return null
+
     return new GeoJsonLayer({
-      data: this.state.geoCities,
-      
+      data,
+
       pickable: true,
-      stroked: false,
+      stroked: true,
       filled: true,
       extruded: false,
 
-      getFillColor: [200, 0, 0, 150],
+      getFillColor: feat => this._getGeoColor(feat, false),
+      getLineColor: feat => this._getGeoColor(feat, true),
+
+      lineWidthScale: 25,
+      lineWidthMinPixels: 0.5,
+      lineWidthMaxPixels: 2,
 
       updateTriggers: {
-        getFillColor: { hover, select, filteredZoneSimpleID }
+        getFillColor: { geo, hoverGeo },
+        getLineColor: { geo, hoverGeo }
       }
     })
+  }
+
+  _getGeoColor (feature, isStroke) {
+    const p = feature.properties
+    let pGeo
+    if (p.CITY) pGeo = 'city-' + p.CITY
+    else if (p.SLDLST) pGeo = 'ad-' + p.Name
+    else if (p.SLDUST) pGeo = 'sd-' + p.Name
+    else throw new Error('Unexpected feature ' + JSON.stringify(p))
+
+    const { filter, hoverGeo } = this.state
+    const { geo } = filter
+
+    let alpha
+    if (pGeo === geo) {
+      alpha = 200
+    } else if (pGeo === hoverGeo) {
+      alpha = 150
+    } else {
+      alpha = 100
+    }
+
+    return [30, 50, 240, alpha + (isStroke ? 55 : 0)]
   }
 
   _renderScatterplotLayer () {
@@ -348,8 +397,8 @@ export default class Contacts extends React.Component {
       location: nextLoc(r.MailingAddress),
       districts: {
         city: r.Administrative_Area__c,
-        stateLower: r.State_Upper_District__c,
-        stateUpper: r.State_Upper_District__c
+        sd: r.State_Upper_District__c,
+        ad: r.State_Lower_District__c
       },
       totalDonationsUSD: r.npo02__TotalOppAmount__c
     }))
@@ -366,11 +415,14 @@ export default class Contacts extends React.Component {
     this._setTokenFromLocalStorage()
   }
 
-  _handleChangeDistrict (district) {
-    if (this.state.filter.district === district) {
-      district = null
+  _handleChangeGeo (geo, hover) {
+    if (hover) {
+      return this.setState({ hoverGeo: geo })
     }
-    this._setFilter({ district })
+    if (this.state.filter.geo === geo) {
+      geo = null
+    }
+    this._setFilter({ geo })
   }
 
   _handleChangeRadius (radius) {
@@ -441,8 +493,16 @@ export default class Contacts extends React.Component {
         )
         if (dist > filter.radius) ret = false
       }
-      if (filter.district !== null) {
-        if (contact.districts.city !== '' + filter.district) ret = false
+      if (filter.geo != null) {
+        const parts = filter.geo.split('-')
+        const gt = parts[0] // eg 'district' or 'sd'
+        const gi = parts[1]
+        if (gt === 'district' && contact.districts.city !== gi) ret = false
+        if (gt === 'sd' && contact.districts.sd !== gi) ret = false
+        if (gt === 'ad' && contact.districts.ad !== gi) ret = false
+        if (gt === 'city' && contact.address.city !== gi) ret = false
+        // TODO: city
+        // TODO: if (gt === 'county' && contact.county !== gi) ret = false
       }
       contact.isFiltered = !ret
       return ret

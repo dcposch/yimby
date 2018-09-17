@@ -19,8 +19,9 @@ export default class Controls extends React.Component {
       filteredContacts,
       radius,
       radiusAddress,
-      district,
-      onChangeDistrict,
+      geo,
+      hoverGeo,
+      onChangeGeo,
       onChangeRadius,
       onChangeRadiusAddress
     } = this.props
@@ -34,37 +35,93 @@ export default class Controls extends React.Component {
       </a>
     )
 
-    const elemsDistrictFilter = [
-      1,
-      0,
-      2,
-      0,
-      3,
-      0,
-      4,
-      0,
-      5,
-      0,
-      6,
-      0,
-      7,
-      0,
-      8,
-      0,
-      9,
-      0,
-      10,
-      0,
-      11
-    ].map((i, j) => {
-      if (i === 0) return ' '
-      var c = district === i ? 'selected' : ''
-      return (
-        <span key={j} className={c} onClick={() => onChangeDistrict(i)}>
-          {'D' + i}
-        </span>
-      )
-    })
+    const elemsDistrict = range(1, 11).map(i => (
+      <Filt key={i} geo={'district-' + i} selGeo={geo} hovGeo={hoverGeo} label={'D' + i} onChangeGeo={onChangeGeo} />
+    ))
+
+    const elemsSD = range(1, 40).map(i => (
+      <Filt key={i} geo={'sd-' + i} selGeo={geo} hovGeo={hoverGeo} label={i === 1 ? 'SD1' : '' + i} onChangeGeo={onChangeGeo} />
+    ))
+
+    const elemsAD = range(1, 80).map(i => (
+      <Filt key={i} geo={'ad-' + i} selGeo={geo} hovGeo={hoverGeo} label={i === 1 ? 'AD1' : '' + i} onChangeGeo={onChangeGeo} />
+    ))
+
+    const cities = [
+      'Alameda',
+      'Albany',
+      'Antioch',
+      'Atheron',
+      'Belmont',
+      'Benicia',
+      'Berkeley',
+      'Brentwood',
+      'Brisbane',
+      'Burlingame',
+      'Calistoga',
+      'Campbell',
+      'Concord',
+      'Cupertino',
+      'Daly City',
+      'Danville',
+      'Dublin',
+      'El Cerrito',
+      'Emeryville',
+      'Fairfax',
+      'Fremont',
+      'Gilroy',
+      'Half Moon Bay',
+      'Hayward',
+      'Hercules',
+      'Lafayette',
+      'Larkspur',
+      'Livermore',
+      'Los Altos',
+      'Los Gatos',
+      'Martinez',
+      'Menlo Park',
+      'Mill Valley',
+      'Millbrae',
+      'Milpitas',
+      'Morgan Hill',
+      'Mountain View',
+      'Oakland',
+      'Pacifica',
+      'Palo Alto',
+      'Petaluma',
+      'Pinole',
+      'Pittsburg',
+      'Pleasant Hill',
+      'Pleasanton',
+      'Portola Valley',
+      'Redwood City',
+      'Richmond',
+      'Rodeo',
+      'San Anselmo',
+      'San Bruno',
+      'San Carlos',
+      'San Francisco',
+      'San Jose',
+      'San Leandro',
+      'San Mateo',
+      'San Pablo',
+      'San Ramon',
+      'Santa Clara',
+      'Santa Rosa',
+      'Saratoga',
+      'Sausalito',
+      'Sebastopol',
+      'South San Francisco',
+      'Stanford',
+      'Sunnyvale',
+      'Union City',
+      'Vacaville',
+      'Vallejo',
+      'Walnut Creek'
+    ]
+    const elemsCity = cities.map(city => (
+      <Filt key={city} geo={'city-' + city} selGeo={geo} hovGeo={hoverGeo} label={city} onChangeGeo={onChangeGeo} />
+    ))
 
     let elemRadiusFilter = null
     if (radiusAddress) {
@@ -79,66 +136,16 @@ export default class Controls extends React.Component {
             )}
           </p>
           <p className='legend'>
-            <span
-              className={r === 100 ? 'selected' : ''}
-              onClick={() => onChangeRadius(100)}
-            >
-              100m
-            </span>{' '}
-            <span
-              className={r === 200 ? 'selected' : ''}
-              onClick={() => onChangeRadius(200)}
-            >
-              200m
-            </span>{' '}
-            <span
-              className={r === 500 ? 'selected' : ''}
-              onClick={() => onChangeRadius(500)}
-            >
-              500m
-            </span>{' '}
-            <span
-              className={r === 1000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(1000)}
-            >
-              1km
-            </span>{' '}
-            <span
-              className={r === 2000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(2000)}
-            >
-              2km
-            </span>{' '}
-            <span
-              className={r === 5000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(5000)}
-            >
-              5km
-            </span>{' '}
-            <span
-              className={r === 10000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(10000)}
-            >
-              10km
-            </span>{' '}
-            <span
-              className={r === 20000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(20000)}
-            >
-              20km
-            </span>{' '}
-            <span
-              className={r === 50000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(50000)}
-            >
-              50km
-            </span>{' '}
-            <span
-              className={r === 100000 ? 'selected' : ''}
-              onClick={() => onChangeRadius(100000)}
-            >
-              100km
-            </span>
+            <Rad r={100} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={200} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={500} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={1000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={2000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={5000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={10000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={20000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={50000} selectedR={r} onChangeRadius={onChangeRadius} />
+            <Rad r={100000} selectedR={r} onChangeRadius={onChangeRadius} />
           </p>
           <p>click above to filter.</p>
         </div>
@@ -146,39 +153,17 @@ export default class Controls extends React.Component {
     }
 
     // export contact emails
+    const setExp = (exportFormat) => this.setState({ exportFormat })
     let elemExportFormat = (
       <div>
         <p className='legend'>
-          <span
-            className={exportFormat === 'csv' ? 'selected' : ''}
-            onClick={() => this.setState({ exportFormat: 'csv' })}
-          >
-            csv
-          </span>{' '}
-          <span
-            className={exportFormat === 'tsv' ? 'selected' : ''}
-            onClick={() => this.setState({ exportFormat: 'tsv' })}
-          >
-            tsv
-          </span>{' '}
-          <span
-            className={exportFormat === 'email' ? 'selected' : ''}
-            onClick={() => this.setState({ exportFormat: 'email' })}
-          >
-            email
-          </span>
+          <Exp exp='csv' selectedExp={exportFormat} onChangeExpFormat={setExp} />
+          <Exp exp='tsv' selectedExp={exportFormat} onChangeExpFormat={setExp} />
+          <Exp exp='email' selectedExp={exportFormat} onChangeExpFormat={setExp} />
         </p>
       </div>
     )
     let filterExport = formatContacts(filteredContacts, exportFormat)
-    /* if (filteredContacts.length === contacts.length) {
-      elemExportFormat = (
-        <span>filter contacts to export</span>
-      )
-      filterExport = null
-    } else {
-      filterExport =
-    } */
 
     return (
       <div className='summary'>
@@ -206,9 +191,18 @@ export default class Controls extends React.Component {
           )}
         </p>
 
-        <h2>district</h2>
-        <p className='legend'>{elemsDistrictFilter}</p>
+        <h2>sf district</h2>
+        <p className='legend'>{elemsDistrict}</p>
         <p>click on a district above to filter. click again to un-filter.</p>
+
+        <h2>california senate district</h2>
+        <p className='legend'>{elemsSD}</p>
+
+        <h2>california assembly district</h2>
+        <p className='legend'>{elemsAD}</p>
+
+        <h2>bay area cities</h2>
+        <p className='legend'>{elemsCity}</p>
 
         <h2>radius</h2>
         <p>
@@ -222,6 +216,9 @@ export default class Controls extends React.Component {
 
         <h2>export</h2>
         {elemExportFormat}
+        <p>
+          {'exporting ' + filteredContacts.length + ' / ' + contacts.length + ' contacts'}
+        </p>
         <pre>{filterExport}</pre>
 
         <footer>
@@ -231,6 +228,62 @@ export default class Controls extends React.Component {
       </div>
     )
   }
+}
+
+function Filt (props) {
+  const isSel = props.geo === props.selGeo
+  const isHov = props.geo === props.hovGeo
+  let c = 'sp'
+  if (isSel) {
+    c += ' selected'
+  } else if (isHov) {
+    c += ' hover'
+  }
+  return (
+    <span
+      className={c}
+      onClick={() => props.onChangeGeo(props.geo)}
+      onMouseOver={() => props.onChangeGeo(props.geo, true)}
+      onMouseOut={() => props.onChangeGeo(null, true)}
+    >
+      <span className='filter-label' title={props.label}>{props.label}</span>
+    </span>
+  )
+}
+
+function Rad (props) {
+  const { r } = props
+  return (
+    <span
+      className={r === props.selectedR ? 'selected sp' : 'sp'}
+      onClick={() => props.onChangeRadius(r)}
+    >
+      <span className='filter-label'>
+        {r < 1000 ? (r + 'm') : (Math.round(r / 1000) + 'km')}
+      </span>
+    </span>
+  )
+}
+
+function Exp (props) {
+  return (
+    <span
+      className={props.exp === props.selectedExp ? 'selected sp' : 'sp'}
+      onClick={() => props.onChangeExpFormat(props.exp)}
+    >
+      <span className='filter-label'>
+        {props.exp}
+      </span>
+    </span>
+  )
+}
+
+function range (a, b) {
+  const ret = []
+  for (let i = a; i <= b; i++) {
+    ret.push(i)
+  }
+  return ret
 }
 
 function formatContacts (contacts, format) {

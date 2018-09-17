@@ -36,7 +36,10 @@ body {
 .legend span {
   display: inline-block;
   cursor: pointer;
-  border-top: 10px solid #000;
+}
+
+.legend .filter-label {
+  border-top: 10px solid #888;
 }
 
 .legend span.selected,
@@ -44,9 +47,17 @@ body {
   font-weight: bold;
 }
 
+.legend span.selected .filter-label {
+  border-color: #333;
+}
+
+.legend span.hover .filter-label {
+  border-color: #666;
+}
+
 /* create a hidden element, so that the width doesn't change when
  * select or unselect this label on a legend (toggles bold font weight) */
-.legend span::after {
+.legend .filter-label::after {
   content: attr(title);
   font-weight: bold;
   overflow: hidden;
@@ -141,4 +152,10 @@ input {
 
 pre {
   overflow: hidden;
+}
+
+.sp {
+  display: inline-block;
+  min-width: 12px;
+  padding: 0 2px;
 }
