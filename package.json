@@ -37,7 +37,8 @@
     "watchify": "^3.8.0"
   },
   "scripts": {
-    "start": "npm run test && npm run watch & (cd static && static -z --cache false .)",
+    "start": "npm run test && npm run watch & npm run serve",
+    "serve": "cd static && static -z --cache false .",
     "build": "rm -rf static/build && mkdir static/build && cp node_modules/mapbox-gl/dist/mapbox-gl.css static/build/ && npm run browserify",
     "build-data": "node ./scripts/process-data.js",
     "watch": "mkdirp static/build && watchify -t babelify src/app.js -o static/build/bundle.js -v",

@@ -292,7 +292,7 @@ export default class Contacts extends React.Component {
         return [contact.location.longitude, contact.location.latitude]
       },
       getRadius: row => {
-        const dotM = 2200 * Math.pow(0.7, zoom)
+        const dotM = 40000 * Math.pow(0.6, zoom)
         return dotM * (row === select ? 2.3 : 2)
       },
       getColor: row => {
@@ -344,7 +344,7 @@ export default class Contacts extends React.Component {
   }
 
   _handleSalesforceContacts (data) {
-    const eps = 0.0002
+    const eps = 0.0003
     const locs = {}
     const cartSpiral = [
       [0, 0],
