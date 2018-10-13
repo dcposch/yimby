@@ -14,7 +14,8 @@ export default class Map extends React.Component {
       height: PropTypes.number,
       mapStyle: PropTypes.string,
       onLayerClick: PropTypes.func,
-      onLayerHover: PropTypes.func
+      onLayerHover: PropTypes.func,
+      onViewportChange: PropTypes.func
     }
   }
 
@@ -40,7 +41,8 @@ export default class Map extends React.Component {
 
     return (
       <DeckGL
-        initialViewState={viewport}
+        viewState={viewport}
+        onViewStateChange={this.props.onViewportChange}
         layers={this.props.layers}
         onLayerClick={this.props.onLayerClick}
         onLayerHover={this.props.onLayerHover}
