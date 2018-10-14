@@ -294,7 +294,7 @@ export default class Contacts extends React.Component {
         return [contact.location.longitude, contact.location.latitude]
       },
       getRadius: row => {
-        const dotM = 150000 * Math.pow(0.5, zoom)
+        const dotM = 100000 * Math.pow(0.5, zoom)
         return dotM * (row === select ? 2.3 : 2)
       },
       getColor: row => {
